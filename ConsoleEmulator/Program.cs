@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using ConsoleEmulator;
+using System.Buffers;
 
 byte[] buffer;
 int size;
@@ -8,11 +9,21 @@ using (FileStream stream = new(args[0], FileMode.Open))
     buffer = ArrayPool<byte>.Shared.Rent(size);
     stream.Read(buffer, 0, size);
 }
-int pc = 0;
-while (pc < size)
+State8080 state8080 = new()
 {
-    pc += Helper.Disassemble8080Op(buffer, pc);
+    Memory = buffer,
+    PC = 0
+};
+while (true)
+{
+    Helper.Emulate8080Op(ref state8080);
+    // Ca va forcément déclencher une exception
 }
+//int pc = 0;
+//while (pc < size)
+//{
+//    pc += Helper.Disassemble8080Op(buffer, pc);
+//}
 
 ArrayPool<byte>.Shared.Return(buffer);
 
@@ -284,5 +295,29 @@ internal static class Helper
         }
         Console.WriteLine();
         return opbytes;
+    }
+
+    private static void UnimplementedInstruction(ref State8080 state)
+    {
+        byte opcode = state.Memory.AsSpan()[state.PC - 1];
+        throw new NotImplementedException(string.Format("Error: Unimplemented instruction {0:X2}", opcode));
+    }
+
+    public static void Emulate8080Op(ref State8080 state)
+    {
+        byte opcode = state.Memory.AsSpan()[state.PC];
+        state.PC++;
+
+        switch (opcode)
+        {
+            case 0x00: { break; }
+            case 0x01: { state.C = state.Memory.AsSpan()[state.PC]; state.B = state.Memory.AsSpan()[state.PC + 1]; state.PC += 2; break; }
+
+            case 0x31: { state.SP = (ushort)((ushort)(state.Memory.AsSpan()[state.PC + 1] << 8) + state.Memory.AsSpan()[state.PC]); state.PC += 2; break; }
+
+            case 0xC3: { state.PC = (ushort)((ushort)(state.Memory.AsSpan()[state.PC + 1] << 8) + state.Memory.AsSpan()[state.PC]); break; }
+
+            default: { UnimplementedInstruction(ref state); break; }
+        }
     }
 }
