@@ -1,12 +1,11 @@
 ﻿using ConsoleEmulator;
-using System.Buffers;
+using System.Runtime.CompilerServices;
 
-byte[] buffer;
+byte[] buffer = new byte[0x10000];
 int size;
 using (FileStream stream = new(args[0], FileMode.Open))
 {
     size = (int)stream.Length;
-    buffer = ArrayPool<byte>.Shared.Rent(size);
     stream.Read(buffer, 0, size);
 }
 State8080 state8080 = new()
@@ -16,16 +15,12 @@ State8080 state8080 = new()
 };
 while (true)
 {
-    Helper.Emulate8080Op(ref state8080);
-    // Ca va forcément déclencher une exception
+    int done = Helper.Emulate8080Op(ref state8080);
+    if (done != 0)
+    {
+        break;
+    }
 }
-//int pc = 0;
-//while (pc < size)
-//{
-//    pc += Helper.Disassemble8080Op(buffer, pc);
-//}
-
-ArrayPool<byte>.Shared.Return(buffer);
 
 internal static class Helper
 {
@@ -299,13 +294,19 @@ internal static class Helper
 
     private static void UnimplementedInstruction(ref State8080 state)
     {
-        byte opcode = state.Memory.AsSpan()[state.PC - 1];
-        throw new NotImplementedException(string.Format("Error: Unimplemented instruction {0:X2}", opcode));
+        state.PC--;
+        Console.WriteLine(string.Format("Error: Unimplemented instruction : {0:X2}", state.Memory.AsSpan()[state.PC]));
+        Disassemble8080Op(state.Memory, state.PC);
+        Environment.Exit(1);
     }
 
-    public static void Emulate8080Op(ref State8080 state)
+    public static int Emulate8080Op(ref State8080 state)
     {
         byte opcode = state.Memory.AsSpan()[state.PC];
+
+        // Pour debugger
+        Disassemble8080Op(state.Memory, state.PC);
+
         state.PC++;
 
         switch (opcode)
@@ -313,11 +314,25 @@ internal static class Helper
             case 0x00: { break; }
             case 0x01: { state.C = state.Memory.AsSpan()[state.PC]; state.B = state.Memory.AsSpan()[state.PC + 1]; state.PC += 2; break; }
 
+            case 0x06: { state.B = state.Memory.AsSpan()[state.PC]; state.PC++; break; }
+
             case 0x31: { state.SP = (ushort)((ushort)(state.Memory.AsSpan()[state.PC + 1] << 8) + state.Memory.AsSpan()[state.PC]); state.PC += 2; break; }
 
             case 0xC3: { state.PC = (ushort)((ushort)(state.Memory.AsSpan()[state.PC + 1] << 8) + state.Memory.AsSpan()[state.PC]); break; }
 
+            case 0xCD:
+                {
+                    Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.SP - 2]) = state.PC;
+                    state.SP -= 2;
+                    state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    break;
+                };
+
             default: { UnimplementedInstruction(ref state); break; }
         }
+
+        // Pour debugger
+        Console.WriteLine(string.Format("A={0:X2}, B={1:X2}, C={2:X2}, D={3:X2}, E={4:X2}, H={5:X2}, L={6:X2}, SP={7:X4}, PC={8:X4}", state.A, state.B, state.C, state.D, state.E, state.H, state.L, state.SP, state.PC));
+        return 0;
     }
 }
