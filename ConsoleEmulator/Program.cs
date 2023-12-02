@@ -311,14 +311,110 @@ internal static class Helper
 
         switch (opcode)
         {
-            case 0x00: { break; }
-            case 0x01: { state.C = state.Memory.AsSpan()[state.PC]; state.B = state.Memory.AsSpan()[state.PC + 1]; state.PC += 2; break; }
+            case 0x00: { break; } // NOP
+            case 0x01: { state.C = state.Memory.AsSpan()[state.PC]; state.B = state.Memory.AsSpan()[state.PC + 1]; state.PC += 2; break; } // LXI B,D16
 
+            case 0x05:
+                {
+                    // 	DCR B
+                    int res = state.B - 1;
+                    ConditionCodes cc = state.CC;
+                    if (res == 0)
+                    {
+                        cc.Z = 1;
+                    }
+                    if ((res & 0x80) != 0)
+                    {
+                        cc.S = 1;
+                    }
+                    cc.P = (byte)(res ^ (res | 1));
+                    state.CC = cc;
+                    state.B = (byte)(0xFF & res);
+                    break;
+                }
             case 0x06: { state.B = state.Memory.AsSpan()[state.PC]; state.PC++; break; }
 
-            case 0x31: { state.SP = (ushort)((ushort)(state.Memory.AsSpan()[state.PC + 1] << 8) + state.Memory.AsSpan()[state.PC]); state.PC += 2; break; }
+            case 0x11:
+                {
+                    state.D = state.Memory.AsSpan()[state.PC + 1];
+                    state.E = state.Memory.AsSpan()[state.PC];
+                    state.PC += 2;
+                    break;
+                }
 
-            case 0xC3: { state.PC = (ushort)((ushort)(state.Memory.AsSpan()[state.PC + 1] << 8) + state.Memory.AsSpan()[state.PC]); break; }
+            case 0x13:
+                {
+                    if (state.E == 0xFF)
+                    {
+                        state.E = 0;
+                        state.D++;
+                    }
+                    else
+                    {
+                        state.E++;
+                    }
+                    break;
+                }
+
+            case 0x1A:
+                {
+                    state.A = state.Memory.AsSpan()[(state.D << 8) + state.E];
+                    break;
+                }
+
+            case 0x21:
+                {
+                    state.H = state.Memory.AsSpan()[state.PC + 1];
+                    state.L = state.Memory.AsSpan()[state.PC];
+                    state.PC += 2;
+                    break;
+                }
+
+            case 0x23:
+                {
+                    if (state.L == 0xFF)
+                    {
+                        state.L = 0;
+                        state.H++;
+                    }
+                    else
+                    {
+                        state.L++;
+                    }
+                    break;
+                }
+
+            case 0x31:
+                {
+                    state.SP = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    state.PC += 2;
+                    break;
+                }
+
+            case 0x77:
+                {
+                    state.Memory.AsSpan()[(state.H << 8) + state.L] = state.A;
+                    break;
+                }
+
+            case 0xC2:
+                {
+                    // JNZ adr
+                    if (state.CC.Z != 1)
+                    {
+                        state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    }
+                    else
+                    {
+                        state.PC += 2;
+                    }
+                    break;
+                }
+            case 0xC3:
+                {
+                    state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    break;
+                }
 
             case 0xCD:
                 {
@@ -332,7 +428,7 @@ internal static class Helper
         }
 
         // Pour debugger
-        Console.WriteLine(string.Format("A={0:X2}, B={1:X2}, C={2:X2}, D={3:X2}, E={4:X2}, H={5:X2}, L={6:X2}, SP={7:X4}, PC={8:X4}", state.A, state.B, state.C, state.D, state.E, state.H, state.L, state.SP, state.PC));
+        Console.WriteLine(string.Format("A={0:X2}, BC={1:X2}{2:X2}, DE={3:X2}{4:X2}, HL={5:X2}{6:X2}, PC={8:X4}, SP={7:X4}", state.A, state.B, state.C, state.D, state.E, state.H, state.L, state.SP, state.PC));
         return 0;
     }
 }
