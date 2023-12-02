@@ -66,8 +66,8 @@ internal static class Helper
             case 0x19: { DebugOutput.Write("DAD\tD"); break; }
             case 0x1A: { DebugOutput.Write("LDAX\tD"); break; }
             case 0x1B: { DebugOutput.Write("DCX\tD"); break; }
-            case 0x1C: { DebugOutput.Write("INR\tD"); break; }
-            case 0x1D: { DebugOutput.Write("DCR\tD"); break; }
+            case 0x1C: { DebugOutput.Write("INR\tE"); break; }
+            case 0x1D: { DebugOutput.Write("DCR\tE"); break; }
             case 0x1E: { DebugOutput.Write("MVI\tE,#${0:X2}", input[pc + 1]); opbytes = 2; break; }
             case 0x1F: { DebugOutput.Write("RAR"); break; }
 

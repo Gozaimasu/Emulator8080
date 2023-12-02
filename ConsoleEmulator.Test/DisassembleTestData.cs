@@ -109,4 +109,100 @@ internal class DisassembleTestData
         yield return new object[] { new byte[1] { 0x02 }, "0000\tSTAX\tB\r\n" };
         yield return new object[] { new byte[1] { 0x12 }, "0000\tSTAX\tD\r\n" };
     }
+
+    public static IEnumerable<object[]> GetADDData()
+    {
+        yield return new object[] { new byte[1] { 0x80 }, "0000\tADD\tB\r\n" };
+        yield return new object[] { new byte[1] { 0x81 }, "0000\tADD\tC\r\n" };
+        yield return new object[] { new byte[1] { 0x82 }, "0000\tADD\tD\r\n" };
+        yield return new object[] { new byte[1] { 0x83 }, "0000\tADD\tE\r\n" };
+        yield return new object[] { new byte[1] { 0x84 }, "0000\tADD\tH\r\n" };
+        yield return new object[] { new byte[1] { 0x85 }, "0000\tADD\tL\r\n" };
+        yield return new object[] { new byte[1] { 0x86 }, "0000\tADD\tM\r\n" };
+        yield return new object[] { new byte[1] { 0x87 }, "0000\tADD\tA\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetADCData()
+    {
+        yield return new object[] { new byte[1] { 0x88 }, "0000\tADC\tB\r\n" };
+        yield return new object[] { new byte[1] { 0x89 }, "0000\tADC\tC\r\n" };
+        yield return new object[] { new byte[1] { 0x8A }, "0000\tADC\tD\r\n" };
+        yield return new object[] { new byte[1] { 0x8B }, "0000\tADC\tE\r\n" };
+        yield return new object[] { new byte[1] { 0x8C }, "0000\tADC\tH\r\n" };
+        yield return new object[] { new byte[1] { 0x8D }, "0000\tADC\tL\r\n" };
+        yield return new object[] { new byte[1] { 0x8E }, "0000\tADC\tM\r\n" };
+        yield return new object[] { new byte[1] { 0x8F }, "0000\tADC\tA\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetSUBData()
+    {
+        yield return new object[] { new byte[1] { 0x90 }, "0000\tSUB\tB\r\n" };
+        yield return new object[] { new byte[1] { 0x91 }, "0000\tSUB\tC\r\n" };
+        yield return new object[] { new byte[1] { 0x92 }, "0000\tSUB\tD\r\n" };
+        yield return new object[] { new byte[1] { 0x93 }, "0000\tSUB\tE\r\n" };
+        yield return new object[] { new byte[1] { 0x94 }, "0000\tSUB\tH\r\n" };
+        yield return new object[] { new byte[1] { 0x95 }, "0000\tSUB\tL\r\n" };
+        yield return new object[] { new byte[1] { 0x96 }, "0000\tSUB\tM\r\n" };
+        yield return new object[] { new byte[1] { 0x97 }, "0000\tSUB\tA\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetSBBData()
+    {
+        yield return new object[] { new byte[1] { 0x98 }, "0000\tSBB\tB\r\n" };
+        yield return new object[] { new byte[1] { 0x99 }, "0000\tSBB\tC\r\n" };
+        yield return new object[] { new byte[1] { 0x9A }, "0000\tSBB\tD\r\n" };
+        yield return new object[] { new byte[1] { 0x9B }, "0000\tSBB\tE\r\n" };
+        yield return new object[] { new byte[1] { 0x9C }, "0000\tSBB\tH\r\n" };
+        yield return new object[] { new byte[1] { 0x9D }, "0000\tSBB\tL\r\n" };
+        yield return new object[] { new byte[1] { 0x9E }, "0000\tSBB\tM\r\n" };
+        yield return new object[] { new byte[1] { 0x9F }, "0000\tSBB\tA\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetINRData()
+    {
+        yield return new object[] { new byte[1] { 0x04 }, "0000\tINR\tB\r\n" };
+        yield return new object[] { new byte[1] { 0x0C }, "0000\tINR\tC\r\n" };
+        yield return new object[] { new byte[1] { 0x14 }, "0000\tINR\tD\r\n" };
+        yield return new object[] { new byte[1] { 0x1C }, "0000\tINR\tE\r\n" };
+        yield return new object[] { new byte[1] { 0x24 }, "0000\tINR\tH\r\n" };
+        yield return new object[] { new byte[1] { 0x2C }, "0000\tINR\tL\r\n" };
+        yield return new object[] { new byte[1] { 0x34 }, "0000\tINR\tM\r\n" };
+        yield return new object[] { new byte[1] { 0x3C }, "0000\tINR\tA\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetDCRData()
+    {
+        yield return new object[] { new byte[1] { 0x05 }, "0000\tDCR\tB\r\n" };
+        yield return new object[] { new byte[1] { 0x0D }, "0000\tDCR\tC\r\n" };
+        yield return new object[] { new byte[1] { 0x15 }, "0000\tDCR\tD\r\n" };
+        yield return new object[] { new byte[1] { 0x1D }, "0000\tDCR\tE\r\n" };
+        yield return new object[] { new byte[1] { 0x25 }, "0000\tDCR\tH\r\n" };
+        yield return new object[] { new byte[1] { 0x2D }, "0000\tDCR\tL\r\n" };
+        yield return new object[] { new byte[1] { 0x35 }, "0000\tDCR\tM\r\n" };
+        yield return new object[] { new byte[1] { 0x3D }, "0000\tDCR\tA\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetINXData()
+    {
+        yield return new object[] { new byte[1] { 0x03 }, "0000\tINX\tB\r\n" };
+        yield return new object[] { new byte[1] { 0x13 }, "0000\tINX\tD\r\n" };
+        yield return new object[] { new byte[1] { 0x23 }, "0000\tINX\tH\r\n" };
+        yield return new object[] { new byte[1] { 0x33 }, "0000\tINX\tSP\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetDCXData()
+    {
+        yield return new object[] { new byte[1] { 0x0B }, "0000\tDCX\tB\r\n" };
+        yield return new object[] { new byte[1] { 0x1B }, "0000\tDCX\tD\r\n" };
+        yield return new object[] { new byte[1] { 0x2B }, "0000\tDCX\tH\r\n" };
+        yield return new object[] { new byte[1] { 0x3B }, "0000\tDCX\tSP\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetDADData()
+    {
+        yield return new object[] { new byte[1] { 0x09 }, "0000\tDAD\tB\r\n" };
+        yield return new object[] { new byte[1] { 0x19 }, "0000\tDAD\tD\r\n" };
+        yield return new object[] { new byte[1] { 0x29 }, "0000\tDAD\tH\r\n" };
+        yield return new object[] { new byte[1] { 0x39 }, "0000\tDAD\tSP\r\n" };
+    }
 }
