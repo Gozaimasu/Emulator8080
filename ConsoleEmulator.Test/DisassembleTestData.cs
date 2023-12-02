@@ -2,7 +2,7 @@
 
 internal class DisassembleTestData
 {
-    public static IEnumerable<object[]> GetMoveData()
+    public static IEnumerable<object[]> GetMOVData()
     {
         yield return new object[] { new byte[1] { 0x40 }, "0000\tMOV\tB,B\r\n" };
         yield return new object[] { new byte[1] { 0x41 }, "0000\tMOV\tB,C\r\n" };
@@ -76,5 +76,37 @@ internal class DisassembleTestData
         yield return new object[] { new byte[1] { 0x7E }, "0000\tMOV\tA,M\r\n" };
         yield return new object[] { new byte[1] { 0x7F }, "0000\tMOV\tA,A\r\n" };
 
+    }
+
+    public static IEnumerable<object[]> GetMVIData()
+    {
+        yield return new object[] { new byte[2] { 0x06, 0x01 }, "0000\tMVI\tB,#$01\r\n" };
+        yield return new object[] { new byte[2] { 0x0E, 0x01 }, "0000\tMVI\tC,#$01\r\n" };
+        yield return new object[] { new byte[2] { 0x16, 0x01 }, "0000\tMVI\tD,#$01\r\n" };
+        yield return new object[] { new byte[2] { 0x1E, 0x01 }, "0000\tMVI\tE,#$01\r\n" };
+        yield return new object[] { new byte[2] { 0x26, 0x01 }, "0000\tMVI\tH,#$01\r\n" };
+        yield return new object[] { new byte[2] { 0x2E, 0x01 }, "0000\tMVI\tL,#$01\r\n" };
+        yield return new object[] { new byte[2] { 0x36, 0x01 }, "0000\tMVI\tM,#$01\r\n" };
+        yield return new object[] { new byte[2] { 0x3E, 0x01 }, "0000\tMVI\tA,#$01\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetLXIData()
+    {
+        yield return new object[] { new byte[3] { 0x01, 0x01, 0x02 }, "0000\tLXI\tB,#$0201\r\n" };
+        yield return new object[] { new byte[3] { 0x11, 0x01, 0x02 }, "0000\tLXI\tD,#$0201\r\n" };
+        yield return new object[] { new byte[3] { 0x21, 0x01, 0x02 }, "0000\tLXI\tH,#$0201\r\n" };
+        yield return new object[] { new byte[3] { 0x31, 0x01, 0x02 }, "0000\tLXI\tSP,#$0201\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetLDAXData()
+    {
+        yield return new object[] { new byte[1] { 0x0A }, "0000\tLDAX\tB\r\n" };
+        yield return new object[] { new byte[1] { 0x1A }, "0000\tLDAX\tD\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetSTAXData()
+    {
+        yield return new object[] { new byte[1] { 0x02 }, "0000\tSTAX\tB\r\n" };
+        yield return new object[] { new byte[1] { 0x12 }, "0000\tSTAX\tD\r\n" };
     }
 }

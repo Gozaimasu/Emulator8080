@@ -68,7 +68,7 @@ internal static class Helper
             case 0x1B: { DebugOutput.Write("DCX\tD"); break; }
             case 0x1C: { DebugOutput.Write("INR\tD"); break; }
             case 0x1D: { DebugOutput.Write("DCR\tD"); break; }
-            case 0x1E: { DebugOutput.Write("MVI\tD,#${0:X2}", input[pc + 1]); opbytes = 2; break; }
+            case 0x1E: { DebugOutput.Write("MVI\tE,#${0:X2}", input[pc + 1]); opbytes = 2; break; }
             case 0x1F: { DebugOutput.Write("RAR"); break; }
 
             case 0x21: { DebugOutput.Write("LXI\tH,#${0:X2}{1:X2}", input[pc + 2], input[pc + 1]); opbytes = 3; break; }
@@ -84,7 +84,7 @@ internal static class Helper
             case 0x2B: { DebugOutput.Write("DCX\tH"); break; }
             case 0x2C: { DebugOutput.Write("INR\tL"); break; }
             case 0x2D: { DebugOutput.Write("DCR\tL"); break; }
-            case 0x2E: { DebugOutput.Write("MVI\tL,{0:X2}", input[pc + 1]); opbytes = 2; break; }
+            case 0x2E: { DebugOutput.Write("MVI\tL,#${0:X2}", input[pc + 1]); opbytes = 2; break; }
             case 0x2F: { DebugOutput.Write("CMA"); break; }
 
             case 0x31: { DebugOutput.Write("LXI\tSP,#${0:X2}{1:X2}", input[pc + 2], input[pc + 1]); opbytes = 3; break; }
