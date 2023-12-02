@@ -1,6 +1,6 @@
 namespace ConsoleEmulator.Test;
 
-public class ProgramTests
+public class HelperTests
 {
     [Theory]
     [InlineData(2, 1, 0, 0, 0)]
