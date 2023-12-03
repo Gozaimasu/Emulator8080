@@ -6,3 +6,5 @@ riderModule.iml
 .vs
 *.csproj.user
 launchSettings.json
+TestResults/
+coveragereport/
