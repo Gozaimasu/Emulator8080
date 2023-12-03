@@ -62,7 +62,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(3, read);
-        Assert.Equal("0000\tLDA\t$0201\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tLDA\t$0201{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(3, read);
-        Assert.Equal("0000\tSTA\t$0201\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tSTA\t$0201{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(3, read);
-        Assert.Equal("0000\tLHLD\t$0201\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tLHLD\t$0201{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(3, read);
-        Assert.Equal("0000\tSHLD\t$0201\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tSHLD\t$0201{Environment.NewLine}", debugOutput.Output);
     }
 
     [Theory]
@@ -154,6 +154,6 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tXCHG\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tXCHG{Environment.NewLine}", debugOutput.Output);
     }
 }

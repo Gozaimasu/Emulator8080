@@ -46,7 +46,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tXTHL\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tXTHL{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tSPHL\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tSPHL{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(2, read);
-        Assert.Equal("0000\tIN\t#$01\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tIN\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(2, read);
-        Assert.Equal("0000\tOUT\t#$01\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tOUT\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tEI\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tEI{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tDI\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tDI{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tHLT\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tHLT{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -151,7 +151,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tNOP\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tNOP{Environment.NewLine}", debugOutput.Output);
     }
 
 }

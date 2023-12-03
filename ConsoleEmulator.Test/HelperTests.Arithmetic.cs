@@ -30,7 +30,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(2, read);
-        Assert.Equal("0000\tADI\t#$01\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tADI\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
     [Theory]
@@ -61,7 +61,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(2, read);
-        Assert.Equal("0000\tACI\t#$01\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tACI\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
     [Theory]
@@ -92,7 +92,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(2, read);
-        Assert.Equal("0000\tSUI\t#$01\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tSUI\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
     [Theory]
@@ -123,7 +123,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(2, read);
-        Assert.Equal("0000\tSBI\t#$01\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tSBI\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
     [Theory]
@@ -218,6 +218,6 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tDAA\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tDAA{Environment.NewLine}", debugOutput.Output);
     }
 }

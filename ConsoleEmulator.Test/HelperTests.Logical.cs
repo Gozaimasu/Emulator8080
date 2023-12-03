@@ -30,7 +30,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(2, read);
-        Assert.Equal("0000\tANI\t#$01\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tANI\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
     [Theory]
@@ -61,7 +61,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(2, read);
-        Assert.Equal("0000\tXRI\t#$01\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tXRI\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
     [Theory]
@@ -92,7 +92,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(2, read);
-        Assert.Equal("0000\tORI\t#$01\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tORI\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
     [Theory]
@@ -123,7 +123,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(2, read);
-        Assert.Equal("0000\tCPI\t#$01\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tCPI\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -138,7 +138,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tRLC\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tRLC{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tRRC\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tRRC{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tRAL\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tRAL{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tRAR\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tRAR{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -198,7 +198,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tCMA\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tCMA{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tCMC\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tCMC{Environment.NewLine}", debugOutput.Output);
     }
 
     [Fact]
@@ -228,6 +228,6 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tSTC\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tSTC{Environment.NewLine}", debugOutput.Output);
     }
 }

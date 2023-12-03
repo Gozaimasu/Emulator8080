@@ -14,7 +14,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(3, read);
-        Assert.Equal("0000\tJMP\t$0201\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tJMP\t$0201{Environment.NewLine}", debugOutput.Output);
     }
 
     [Theory]
@@ -45,7 +45,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(3, read);
-        Assert.Equal("0000\tCALL\t$0201\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tCALL\t$0201{Environment.NewLine}", debugOutput.Output);
     }
 
     [Theory]
@@ -76,7 +76,7 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tRET\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tRET{Environment.NewLine}", debugOutput.Output);
     }
 
     [Theory]
@@ -123,6 +123,6 @@ public partial class HelperTests
 
         // Assert
         Assert.Equal(1, read);
-        Assert.Equal("0000\tPCHL\r\n", debugOutput.Output);
+        Assert.Equal($"0000\tPCHL{Environment.NewLine}", debugOutput.Output);
     }
 }

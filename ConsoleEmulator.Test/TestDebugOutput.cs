@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using System.Text;
+﻿using System.Text;
 
 namespace ConsoleEmulator.Test;
 
