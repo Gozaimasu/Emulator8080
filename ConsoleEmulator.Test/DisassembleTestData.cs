@@ -205,4 +205,52 @@ internal class DisassembleTestData
         yield return new object[] { new byte[1] { 0x29 }, "0000\tDAD\tH\r\n" };
         yield return new object[] { new byte[1] { 0x39 }, "0000\tDAD\tSP\r\n" };
     }
+
+    public static IEnumerable<object[]> GetANAData()
+    {
+        yield return new object[] { new byte[1] { 0xA0 }, "0000\tANA\tB\r\n" };
+        yield return new object[] { new byte[1] { 0xA1 }, "0000\tANA\tC\r\n" };
+        yield return new object[] { new byte[1] { 0xA2 }, "0000\tANA\tD\r\n" };
+        yield return new object[] { new byte[1] { 0xA3 }, "0000\tANA\tE\r\n" };
+        yield return new object[] { new byte[1] { 0xA4 }, "0000\tANA\tH\r\n" };
+        yield return new object[] { new byte[1] { 0xA5 }, "0000\tANA\tL\r\n" };
+        yield return new object[] { new byte[1] { 0xA6 }, "0000\tANA\tM\r\n" };
+        yield return new object[] { new byte[1] { 0xA7 }, "0000\tANA\tA\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetXRAData()
+    {
+        yield return new object[] { new byte[1] { 0xA8 }, "0000\tXRA\tB\r\n" };
+        yield return new object[] { new byte[1] { 0xA9 }, "0000\tXRA\tC\r\n" };
+        yield return new object[] { new byte[1] { 0xAA }, "0000\tXRA\tD\r\n" };
+        yield return new object[] { new byte[1] { 0xAB }, "0000\tXRA\tE\r\n" };
+        yield return new object[] { new byte[1] { 0xAC }, "0000\tXRA\tH\r\n" };
+        yield return new object[] { new byte[1] { 0xAD }, "0000\tXRA\tL\r\n" };
+        yield return new object[] { new byte[1] { 0xAE }, "0000\tXRA\tM\r\n" };
+        yield return new object[] { new byte[1] { 0xAF }, "0000\tXRA\tA\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetORAData()
+    {
+        yield return new object[] { new byte[1] { 0xB0 }, "0000\tORA\tB\r\n" };
+        yield return new object[] { new byte[1] { 0xB1 }, "0000\tORA\tC\r\n" };
+        yield return new object[] { new byte[1] { 0xB2 }, "0000\tORA\tD\r\n" };
+        yield return new object[] { new byte[1] { 0xB3 }, "0000\tORA\tE\r\n" };
+        yield return new object[] { new byte[1] { 0xB4 }, "0000\tORA\tH\r\n" };
+        yield return new object[] { new byte[1] { 0xB5 }, "0000\tORA\tL\r\n" };
+        yield return new object[] { new byte[1] { 0xB6 }, "0000\tORA\tM\r\n" };
+        yield return new object[] { new byte[1] { 0xB7 }, "0000\tORA\tA\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetCMPData()
+    {
+        yield return new object[] { new byte[1] { 0xB8 }, "0000\tCMP\tB\r\n" };
+        yield return new object[] { new byte[1] { 0xB9 }, "0000\tCMP\tC\r\n" };
+        yield return new object[] { new byte[1] { 0xBA }, "0000\tCMP\tD\r\n" };
+        yield return new object[] { new byte[1] { 0xBB }, "0000\tCMP\tE\r\n" };
+        yield return new object[] { new byte[1] { 0xBC }, "0000\tCMP\tH\r\n" };
+        yield return new object[] { new byte[1] { 0xBD }, "0000\tCMP\tL\r\n" };
+        yield return new object[] { new byte[1] { 0xBE }, "0000\tCMP\tM\r\n" };
+        yield return new object[] { new byte[1] { 0xBF }, "0000\tCMP\tA\r\n" };
+    }
 }
