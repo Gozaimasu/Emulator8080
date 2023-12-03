@@ -253,4 +253,52 @@ internal class DisassembleTestData
         yield return new object[] { new byte[1] { 0xBE }, "0000\tCMP\tM\r\n" };
         yield return new object[] { new byte[1] { 0xBF }, "0000\tCMP\tA\r\n" };
     }
+
+    public static IEnumerable<object[]> GetJConditionData()
+    {
+        yield return new object[] { new byte[3] { 0xC2, 0x01, 0x02 }, "0000\tJNZ\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xCA, 0x01, 0x02 }, "0000\tJZ\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xD2, 0x01, 0x02 }, "0000\tJNC\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xDA, 0x01, 0x02 }, "0000\tJC\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xE2, 0x01, 0x02 }, "0000\tJPO\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xEA, 0x01, 0x02 }, "0000\tJPE\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xF2, 0x01, 0x02 }, "0000\tJP\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xFA, 0x01, 0x02 }, "0000\tJM\t$0201\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetCConditionData()
+    {
+        yield return new object[] { new byte[3] { 0xC4, 0x01, 0x02 }, "0000\tCNZ\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xCC, 0x01, 0x02 }, "0000\tCZ\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xD4, 0x01, 0x02 }, "0000\tCNC\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xDC, 0x01, 0x02 }, "0000\tCC\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xE4, 0x01, 0x02 }, "0000\tCPO\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xEC, 0x01, 0x02 }, "0000\tCPE\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xF4, 0x01, 0x02 }, "0000\tCP\t$0201\r\n" };
+        yield return new object[] { new byte[3] { 0xFC, 0x01, 0x02 }, "0000\tCM\t$0201\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetRConditionData()
+    {
+        yield return new object[] { new byte[1] { 0xC0 }, "0000\tRNZ\r\n" };
+        yield return new object[] { new byte[1] { 0xC8 }, "0000\tRZ\r\n" };
+        yield return new object[] { new byte[1] { 0xD0 }, "0000\tRNC\r\n" };
+        yield return new object[] { new byte[1] { 0xD8 }, "0000\tRC\r\n" };
+        yield return new object[] { new byte[1] { 0xE0 }, "0000\tRPO\r\n" };
+        yield return new object[] { new byte[1] { 0xE8 }, "0000\tRPE\r\n" };
+        yield return new object[] { new byte[1] { 0xF0 }, "0000\tRP\r\n" };
+        yield return new object[] { new byte[1] { 0xF8 }, "0000\tRM\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetRSTData()
+    {
+        yield return new object[] { new byte[1] { 0xC7 }, "0000\tRST\t0\r\n" };
+        yield return new object[] { new byte[1] { 0xCF }, "0000\tRST\t1\r\n" };
+        yield return new object[] { new byte[1] { 0xD7 }, "0000\tRST\t2\r\n" };
+        yield return new object[] { new byte[1] { 0xDF }, "0000\tRST\t3\r\n" };
+        yield return new object[] { new byte[1] { 0xE7 }, "0000\tRST\t4\r\n" };
+        yield return new object[] { new byte[1] { 0xEF }, "0000\tRST\t5\r\n" };
+        yield return new object[] { new byte[1] { 0xF7 }, "0000\tRST\t6\r\n" };
+        yield return new object[] { new byte[1] { 0xFF }, "0000\tRST\t7\r\n" };
+    }
 }
