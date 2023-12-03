@@ -301,4 +301,20 @@ internal class DisassembleTestData
         yield return new object[] { new byte[1] { 0xF7 }, "0000\tRST\t6\r\n" };
         yield return new object[] { new byte[1] { 0xFF }, "0000\tRST\t7\r\n" };
     }
+
+    public static IEnumerable<object[]> GetPUSHData()
+    {
+        yield return new object[] { new byte[1] { 0xC5 }, "0000\tPUSH\tB\r\n" };
+        yield return new object[] { new byte[1] { 0xD5 }, "0000\tPUSH\tD\r\n" };
+        yield return new object[] { new byte[1] { 0xE5 }, "0000\tPUSH\tH\r\n" };
+        yield return new object[] { new byte[1] { 0xF5 }, "0000\tPUSH\tPSW\r\n" };
+    }
+
+    public static IEnumerable<object[]> GetPOPData()
+    {
+        yield return new object[] { new byte[1] { 0xC1 }, "0000\tPOP\tB\r\n" };
+        yield return new object[] { new byte[1] { 0xD1 }, "0000\tPOP\tD\r\n" };
+        yield return new object[] { new byte[1] { 0xE1 }, "0000\tPOP\tH\r\n" };
+        yield return new object[] { new byte[1] { 0xF1 }, "0000\tPOP\tPSW\r\n" };
+    }
 }

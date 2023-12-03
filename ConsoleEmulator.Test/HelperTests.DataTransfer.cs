@@ -2,21 +2,6 @@ namespace ConsoleEmulator.Test;
 
 public partial class HelperTests
 {
-    [Fact]
-    public void Disassemble8080Op_WhenNOP_ShouldSucceed()
-    {
-        // Arrange
-        TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
-
-        // Act
-        int read = Helper.Disassemble8080Op([0x00], 0);
-
-        // Assert
-        Assert.Equal(1, read);
-        Assert.Equal("0000\tNOP\r\n", debugOutput.Output);
-    }
-
     [Theory]
     [MemberData(nameof(DisassembleTestData.GetMOVData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenMOV_ShouldSucceed(byte[] data, string expectedOutput)
