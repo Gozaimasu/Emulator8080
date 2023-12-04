@@ -316,122 +316,132 @@ internal static class Helper
 
         state.PC++;
 
-        switch (opcode)
+        if ((opcode & 0xC7) == 0xC7)
         {
-            case 0x00: { break; } // NOP
-            case 0x01: { state.C = state.Memory.AsSpan()[state.PC]; state.B = state.Memory.AsSpan()[state.PC + 1]; state.PC += 2; break; } // LXI B,D16
+            // DCR
+            // TODO : gérer offset == 6 => DCR M
 
-            case 0x05:
-                {
-                    // 	DCR B
-                    int res = state.B - 1;
-                    ConditionCodes cc = state.CC;
-                    if (res == 0)
+            // Récupération de l'offset
+            int offset = (opcode >> 3) & 0x07;
+            // Récupération du registre correspondant et on décrémente la valeur
+            int res = state.GetRegister(offset) - 1;
+            ConditionCodes cc = state.CC;
+            // Modification de CC
+            if (res == 0)
+            {
+                cc.Z = 1;
+            }
+            if ((res & 0x80) != 0)
+            {
+                cc.S = 1;
+            }
+            cc.P = (byte)(res ^ (res | 1));
+            // Affectation de la nouvelle valeur de CC
+            state.CC = cc;
+            // Modification du registre
+            state.SetRegister(offset, (byte)(0xFF & res));
+        }
+        else
+        {
+            switch (opcode)
+            {
+                case 0x00: { break; } // NOP
+                case 0x01: { state.C = state.Memory.AsSpan()[state.PC]; state.B = state.Memory.AsSpan()[state.PC + 1]; state.PC += 2; break; } // LXI B,D16
+
+                case 0x06: { state.B = state.Memory.AsSpan()[state.PC]; state.PC++; break; }
+
+                case 0x11:
                     {
-                        cc.Z = 1;
+                        state.D = state.Memory.AsSpan()[state.PC + 1];
+                        state.E = state.Memory.AsSpan()[state.PC];
+                        state.PC += 2;
+                        break;
                     }
-                    if ((res & 0x80) != 0)
+
+                case 0x13:
                     {
-                        cc.S = 1;
+                        if (state.E == 0xFF)
+                        {
+                            state.E = 0;
+                            state.D++;
+                        }
+                        else
+                        {
+                            state.E++;
+                        }
+                        break;
                     }
-                    cc.P = (byte)(res ^ (res | 1));
-                    state.CC = cc;
-                    state.B = (byte)(0xFF & res);
-                    break;
-                }
-            case 0x06: { state.B = state.Memory.AsSpan()[state.PC]; state.PC++; break; }
 
-            case 0x11:
-                {
-                    state.D = state.Memory.AsSpan()[state.PC + 1];
-                    state.E = state.Memory.AsSpan()[state.PC];
-                    state.PC += 2;
-                    break;
-                }
-
-            case 0x13:
-                {
-                    if (state.E == 0xFF)
+                case 0x1A:
                     {
-                        state.E = 0;
-                        state.D++;
+                        state.A = state.Memory.AsSpan()[(state.D << 8) + state.E];
+                        break;
                     }
-                    else
+
+                case 0x21:
                     {
-                        state.E++;
+                        state.H = state.Memory.AsSpan()[state.PC + 1];
+                        state.L = state.Memory.AsSpan()[state.PC];
+                        state.PC += 2;
+                        break;
                     }
-                    break;
-                }
 
-            case 0x1A:
-                {
-                    state.A = state.Memory.AsSpan()[(state.D << 8) + state.E];
-                    break;
-                }
-
-            case 0x21:
-                {
-                    state.H = state.Memory.AsSpan()[state.PC + 1];
-                    state.L = state.Memory.AsSpan()[state.PC];
-                    state.PC += 2;
-                    break;
-                }
-
-            case 0x23:
-                {
-                    if (state.L == 0xFF)
+                case 0x23:
                     {
-                        state.L = 0;
-                        state.H++;
+                        if (state.L == 0xFF)
+                        {
+                            state.L = 0;
+                            state.H++;
+                        }
+                        else
+                        {
+                            state.L++;
+                        }
+                        break;
                     }
-                    else
+
+                case 0x31:
                     {
-                        state.L++;
+                        state.SP = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                        state.PC += 2;
+                        break;
                     }
-                    break;
-                }
 
-            case 0x31:
-                {
-                    state.SP = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
-                    state.PC += 2;
-                    break;
-                }
+                case 0x77:
+                    {
+                        state.Memory.AsSpan()[(state.H << 8) + state.L] = state.A;
+                        break;
+                    }
 
-            case 0x77:
-                {
-                    state.Memory.AsSpan()[(state.H << 8) + state.L] = state.A;
-                    break;
-                }
-
-            case 0xC2:
-                {
-                    // JNZ adr
-                    if (state.CC.Z != 1)
+                case 0xC2:
+                    {
+                        // JNZ adr
+                        if (state.CC.Z != 1)
+                        {
+                            state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                        }
+                        else
+                        {
+                            state.PC += 2;
+                        }
+                        break;
+                    }
+                case 0xC3:
                     {
                         state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                        break;
                     }
-                    else
+
+                case 0xCD:
                     {
-                        state.PC += 2;
-                    }
-                    break;
-                }
-            case 0xC3:
-                {
-                    state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
-                    break;
-                }
+                        Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.SP - 2]) = state.PC;
+                        state.SP -= 2;
+                        state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                        break;
+                    };
 
-            case 0xCD:
-                {
-                    Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.SP - 2]) = state.PC;
-                    state.SP -= 2;
-                    state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
-                    break;
-                };
-
-            default: { UnimplementedInstruction(ref state); break; }
+                default: { UnimplementedInstruction(ref state); break; }
+            }
         }
 
         // Pour debugger
