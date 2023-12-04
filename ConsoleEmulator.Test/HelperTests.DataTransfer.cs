@@ -51,6 +51,81 @@ public partial class HelperTests
     }
 
     [Fact]
+    public void Emulate8080Op_WhenLXIB_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x01, 0x01, 0x02],
+            PC = 0
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0x01, state.C);
+        Assert.Equal(0x02, state.B);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenLXID_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x11, 0x01, 0x02],
+            PC = 0
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0x01, state.E);
+        Assert.Equal(0x02, state.D);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenLXIH_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x21, 0x01, 0x02],
+            PC = 0
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0x01, state.L);
+        Assert.Equal(0x02, state.H);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenLXISP_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x31, 0x01, 0x02],
+            PC = 0
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0x0201, state.SP);
+    }
+
+    [Fact]
     public void Disassemble8080Op_WhenLDA_ShouldSucceed()
     {
         // Arrange
