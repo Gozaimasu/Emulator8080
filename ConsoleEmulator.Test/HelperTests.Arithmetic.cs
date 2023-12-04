@@ -159,6 +159,174 @@ public partial class HelperTests
     }
 
     [Theory]
+    [MemberData(nameof(EmulateTestData.GetDCRData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenDCRB_ShouldSucceed(byte initialValue, byte expectedValue, byte expectedZ, byte expectedS, byte expectedP)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x05],
+            PC = 0,
+            B = initialValue,
+            CC = new ConditionCodes()
+        };
+
+        // Act
+        Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(expectedValue, state.B);
+        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedZ, state.CC.Z);
+        Assert.Equal(expectedS, state.CC.S);
+        Assert.Equal(expectedP, state.CC.P);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetDCRData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenDCRC_ShouldSucceed(byte initialValue, byte expectedValue, byte expectedZ, byte expectedS, byte expectedP)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x0D],
+            PC = 0,
+            C = initialValue,
+            CC = new ConditionCodes()
+        };
+
+        // Act
+        Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(expectedValue, state.C);
+        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedZ, state.CC.Z);
+        Assert.Equal(expectedS, state.CC.S);
+        Assert.Equal(expectedP, state.CC.P);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetDCRData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenDCRD_ShouldSucceed(byte initialValue, byte expectedValue, byte expectedZ, byte expectedS, byte expectedP)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x15],
+            PC = 0,
+            D = initialValue,
+            CC = new ConditionCodes()
+        };
+
+        // Act
+        Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(expectedValue, state.D);
+        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedZ, state.CC.Z);
+        Assert.Equal(expectedS, state.CC.S);
+        Assert.Equal(expectedP, state.CC.P);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetDCRData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenDCRE_ShouldSucceed(byte initialValue, byte expectedValue, byte expectedZ, byte expectedS, byte expectedP)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x1D],
+            PC = 0,
+            E = initialValue,
+            CC = new ConditionCodes()
+        };
+
+        // Act
+        Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(expectedValue, state.E);
+        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedZ, state.CC.Z);
+        Assert.Equal(expectedS, state.CC.S);
+        Assert.Equal(expectedP, state.CC.P);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetDCRData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenDCRH_ShouldSucceed(byte initialValue, byte expectedValue, byte expectedZ, byte expectedS, byte expectedP)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x25],
+            PC = 0,
+            H = initialValue,
+            CC = new ConditionCodes()
+        };
+
+        // Act
+        Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(expectedValue, state.H);
+        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedZ, state.CC.Z);
+        Assert.Equal(expectedS, state.CC.S);
+        Assert.Equal(expectedP, state.CC.P);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetDCRData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenDCRL_ShouldSucceed(byte initialValue, byte expectedValue, byte expectedZ, byte expectedS, byte expectedP)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x2D],
+            PC = 0,
+            L = initialValue,
+            CC = new ConditionCodes()
+        };
+
+        // Act
+        Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(expectedValue, state.L);
+        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedZ, state.CC.Z);
+        Assert.Equal(expectedS, state.CC.S);
+        Assert.Equal(expectedP, state.CC.P);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetDCRData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenDCRA_ShouldSucceed(byte initialValue, byte expectedValue, byte expectedZ, byte expectedS, byte expectedP)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x3D],
+            PC = 0,
+            A = initialValue,
+            CC = new ConditionCodes()
+        };
+
+        // Act
+        Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(expectedValue, state.A);
+        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedZ, state.CC.Z);
+        Assert.Equal(expectedS, state.CC.S);
+        Assert.Equal(expectedP, state.CC.P);
+    }
+
+    [Theory]
     [MemberData(nameof(DisassembleTestData.GetINXData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenINX_ShouldSucceed(byte[] data, string expectedOutput)
     {
