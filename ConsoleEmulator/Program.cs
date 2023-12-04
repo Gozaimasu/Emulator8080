@@ -374,43 +374,27 @@ internal static class Helper
             }
             state.PC += 2;
         }
+        // INX
+        else if ((opcode & 0xCF) == 0x03)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            switch (offset)
+            {
+                case 0: { if (state.C == 0xFF) { state.C = 0; state.B++; } else { state.C++; } break; } // INX B
+                case 1: { if (state.E == 0xFF) { state.E = 0; state.D++; } else { state.E++; } break; } // INX D
+                case 2: { if (state.L == 0xFF) { state.L = 0; state.H++; } else { state.L++; } break; } // INX H
+                case 3: { state.SP++; break; } // LXI SP,D16
+            }
+        }
         else
         {
             switch (opcode)
             {
                 case 0x00: { break; } // NOP
 
-                case 0x13:
-                    {
-                        if (state.E == 0xFF)
-                        {
-                            state.E = 0;
-                            state.D++;
-                        }
-                        else
-                        {
-                            state.E++;
-                        }
-                        break;
-                    }
-
                 case 0x1A:
                     {
                         state.A = state.Memory.AsSpan()[(state.D << 8) + state.E];
-                        break;
-                    }
-
-                case 0x23:
-                    {
-                        if (state.L == 0xFF)
-                        {
-                            state.L = 0;
-                            state.H++;
-                        }
-                        else
-                        {
-                            state.L++;
-                        }
                         break;
                     }
 
