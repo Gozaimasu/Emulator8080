@@ -346,6 +346,21 @@ internal static class Helper
             // Modification du registre
             state.SetRegister(offset, (byte)(0xFF & res));
         }
+        // MVI
+        else if ((opcode & 0xC7) == 0x06)
+        {
+            // Récupération de l'offset
+            int offset = (opcode >> 3) & 0x07;
+
+            if (offset == 6)
+            {
+                // DCR M
+                return UnimplementedInstruction(ref state);
+            }
+
+            state.SetRegister(offset, state.Memory.AsSpan()[state.PC]);
+            state.PC++;
+        }
         // LXI
         else if ((opcode & 0xCF) == 0x01)
         {
@@ -364,8 +379,6 @@ internal static class Helper
             switch (opcode)
             {
                 case 0x00: { break; } // NOP
-
-                case 0x06: { state.B = state.Memory.AsSpan()[state.PC]; state.PC++; break; }
 
                 case 0x13:
                     {
