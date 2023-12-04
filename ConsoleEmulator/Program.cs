@@ -316,9 +316,9 @@ internal static class Helper
 
         state.PC++;
 
+        // DCR
         if ((opcode & 0xC7) == 0x05)
         {
-            // DCR
             // TODO : gérer offset == 6 => DCR M
 
             // Récupération de l'offset
@@ -341,22 +341,26 @@ internal static class Helper
             // Modification du registre
             state.SetRegister(offset, (byte)(0xFF & res));
         }
+        // LXI
+        else if ((opcode & 0xCF) == 0x01)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            switch (offset)
+            {
+                case 0: { state.C = state.Memory.AsSpan()[state.PC]; state.B = state.Memory.AsSpan()[state.PC + 1]; break; } // LXI B,D16
+                case 1: { state.E = state.Memory.AsSpan()[state.PC]; state.D = state.Memory.AsSpan()[state.PC + 1]; break; } // LXI D,D16
+                case 2: { state.L = state.Memory.AsSpan()[state.PC]; state.H = state.Memory.AsSpan()[state.PC + 1]; break; } // LXI H,D16
+                case 3: { state.SP = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]); break; } // LXI SP,D16
+            }
+            state.PC += 2;
+        }
         else
         {
             switch (opcode)
             {
                 case 0x00: { break; } // NOP
-                case 0x01: { state.C = state.Memory.AsSpan()[state.PC]; state.B = state.Memory.AsSpan()[state.PC + 1]; state.PC += 2; break; } // LXI B,D16
 
                 case 0x06: { state.B = state.Memory.AsSpan()[state.PC]; state.PC++; break; }
-
-                case 0x11:
-                    {
-                        state.D = state.Memory.AsSpan()[state.PC + 1];
-                        state.E = state.Memory.AsSpan()[state.PC];
-                        state.PC += 2;
-                        break;
-                    }
 
                 case 0x13:
                     {
@@ -375,14 +379,6 @@ internal static class Helper
                 case 0x1A:
                     {
                         state.A = state.Memory.AsSpan()[(state.D << 8) + state.E];
-                        break;
-                    }
-
-                case 0x21:
-                    {
-                        state.H = state.Memory.AsSpan()[state.PC + 1];
-                        state.L = state.Memory.AsSpan()[state.PC];
-                        state.PC += 2;
                         break;
                     }
 
