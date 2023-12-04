@@ -299,12 +299,12 @@ internal static class Helper
         return opbytes;
     }
 
-    private static void UnimplementedInstruction(ref State8080 state)
+    private static int UnimplementedInstruction(ref State8080 state)
     {
         state.PC--;
         DebugOutput.WriteLine(string.Format("Error: Unimplemented instruction : {0:X2}", state.Memory.AsSpan()[state.PC]));
         Disassemble8080Op(state.Memory, state.PC);
-        Environment.Exit(1);
+        return 1;
     }
 
     public static int Emulate8080Op(ref State8080 state)
@@ -436,7 +436,7 @@ internal static class Helper
                         break;
                     };
 
-                default: { UnimplementedInstruction(ref state); break; }
+                default: { return UnimplementedInstruction(ref state); }
             }
         }
 
