@@ -316,7 +316,7 @@ internal static class Helper
 
         state.PC++;
 
-        if ((opcode & 0xC7) == 0xC7)
+        if ((opcode & 0xC7) == 0x05)
         {
             // DCR
             // TODO : gérer offset == 6 => DCR M
