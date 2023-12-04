@@ -9,12 +9,12 @@ internal class ConsoleDebugOutput : IDebugOutput
 
     public void Write(string messageFormat, object? arg0)
     {
-        Console.WriteLine(messageFormat, arg0);
+        Console.Write(messageFormat, arg0);
     }
 
     public void Write(string messageFormat, object? arg0, object? arg1)
     {
-        Console.WriteLine(messageFormat, arg0, arg1);
+        Console.Write(messageFormat, arg0, arg1);
     }
 
     public void WriteLine(string message)

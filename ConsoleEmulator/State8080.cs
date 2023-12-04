@@ -2,7 +2,7 @@
 
 internal struct State8080
 {
-    private readonly byte[] _registers  = new byte[8];
+    private readonly byte[] _registers = new byte[8];
 
     public byte A
     {
@@ -47,7 +47,7 @@ internal struct State8080
 
     public State8080()
     {
-        
+
     }
 
     public byte GetRegister(int offset)

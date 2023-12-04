@@ -17,6 +17,24 @@ public partial class HelperTests
         Assert.Equal($"0000\tJMP\t$0201{Environment.NewLine}", debugOutput.Output);
     }
 
+    [Fact]
+    public void Emulate8080Op_WhenJMP_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0xC3, 0x01, 0x02],
+            PC = 0
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0x0201, state.PC);
+    }
+
     [Theory]
     [MemberData(nameof(DisassembleTestData.GetJConditionData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenJCondition_ShouldSucceed(byte[] data, string expectedOutput)

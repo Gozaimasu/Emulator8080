@@ -343,6 +343,92 @@ public partial class HelperTests
     }
 
     [Theory]
+    [MemberData(nameof(EmulateTestData.GetINXData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenINXB_ShouldSucceed(ushort initialValue, ushort expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x03],
+            PC = 0,
+            B = (byte)((initialValue >> 8) & 0xFF),
+            C = (byte)(initialValue & 0xFF),
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal((byte)(expectedValue & 0xFF), state.C);
+        Assert.Equal((byte)((expectedValue >> 8) & 0xFF), state.B);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetINXData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenINXD_ShouldSucceed(ushort initialValue, ushort expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x13],
+            PC = 0,
+            D = (byte)((initialValue >> 8) & 0xFF),
+            E = (byte)(initialValue & 0xFF),
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal((byte)(expectedValue & 0xFF), state.E);
+        Assert.Equal((byte)((expectedValue >> 8) & 0xFF), state.D);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetINXData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenINXH_ShouldSucceed(ushort initialValue, ushort expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x23],
+            PC = 0,
+            H = (byte)((initialValue >> 8) & 0xFF),
+            L = (byte)(initialValue & 0xFF),
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal((byte)(expectedValue & 0xFF), state.L);
+        Assert.Equal((byte)((expectedValue >> 8) & 0xFF), state.H);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetINXData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenINXSP_ShouldSucceed(ushort initialValue, ushort expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0x33],
+            PC = 0,
+            SP = initialValue
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedValue, state.SP);
+    }
+
+    [Theory]
     [MemberData(nameof(DisassembleTestData.GetDCXData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenDCX_ShouldSucceed(byte[] data, string expectedOutput)
     {

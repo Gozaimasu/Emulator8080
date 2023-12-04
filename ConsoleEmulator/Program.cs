@@ -299,12 +299,12 @@ internal static class Helper
         return opbytes;
     }
 
-    private static void UnimplementedInstruction(ref State8080 state)
+    private static int UnimplementedInstruction(ref State8080 state)
     {
         state.PC--;
         DebugOutput.WriteLine(string.Format("Error: Unimplemented instruction : {0:X2}", state.Memory.AsSpan()[state.PC]));
         Disassemble8080Op(state.Memory, state.PC);
-        Environment.Exit(1);
+        return 1;
     }
 
     public static int Emulate8080Op(ref State8080 state)
@@ -316,13 +316,18 @@ internal static class Helper
 
         state.PC++;
 
+        // DCR
         if ((opcode & 0xC7) == 0x05)
         {
-            // DCR
-            // TODO : gérer offset == 6 => DCR M
-
             // Récupération de l'offset
             int offset = (opcode >> 3) & 0x07;
+
+            if (offset == 6)
+            {
+                // DCR M
+                return UnimplementedInstruction(ref state);
+            }
+
             // Récupération du registre correspondant et on décrémente la valeur
             int res = state.GetRegister(offset) - 1;
             ConditionCodes cc = state.CC;
@@ -341,62 +346,55 @@ internal static class Helper
             // Modification du registre
             state.SetRegister(offset, (byte)(0xFF & res));
         }
+        // MVI
+        else if ((opcode & 0xC7) == 0x06)
+        {
+            // Récupération de l'offset
+            int offset = (opcode >> 3) & 0x07;
+
+            if (offset == 6)
+            {
+                // DCR M
+                return UnimplementedInstruction(ref state);
+            }
+
+            state.SetRegister(offset, state.Memory.AsSpan()[state.PC]);
+            state.PC++;
+        }
+        // LXI
+        else if ((opcode & 0xCF) == 0x01)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            switch (offset)
+            {
+                case 0: { state.C = state.Memory.AsSpan()[state.PC]; state.B = state.Memory.AsSpan()[state.PC + 1]; break; } // LXI B,D16
+                case 1: { state.E = state.Memory.AsSpan()[state.PC]; state.D = state.Memory.AsSpan()[state.PC + 1]; break; } // LXI D,D16
+                case 2: { state.L = state.Memory.AsSpan()[state.PC]; state.H = state.Memory.AsSpan()[state.PC + 1]; break; } // LXI H,D16
+                case 3: { state.SP = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]); break; } // LXI SP,D16
+            }
+            state.PC += 2;
+        }
+        // INX
+        else if ((opcode & 0xCF) == 0x03)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            switch (offset)
+            {
+                case 0: { if (state.C == 0xFF) { state.C = 0; state.B++; } else { state.C++; } break; } // INX B
+                case 1: { if (state.E == 0xFF) { state.E = 0; state.D++; } else { state.E++; } break; } // INX D
+                case 2: { if (state.L == 0xFF) { state.L = 0; state.H++; } else { state.L++; } break; } // INX H
+                case 3: { state.SP++; break; } // LXI SP,D16
+            }
+        }
         else
         {
             switch (opcode)
             {
                 case 0x00: { break; } // NOP
-                case 0x01: { state.C = state.Memory.AsSpan()[state.PC]; state.B = state.Memory.AsSpan()[state.PC + 1]; state.PC += 2; break; } // LXI B,D16
-
-                case 0x06: { state.B = state.Memory.AsSpan()[state.PC]; state.PC++; break; }
-
-                case 0x11:
-                    {
-                        state.D = state.Memory.AsSpan()[state.PC + 1];
-                        state.E = state.Memory.AsSpan()[state.PC];
-                        state.PC += 2;
-                        break;
-                    }
-
-                case 0x13:
-                    {
-                        if (state.E == 0xFF)
-                        {
-                            state.E = 0;
-                            state.D++;
-                        }
-                        else
-                        {
-                            state.E++;
-                        }
-                        break;
-                    }
 
                 case 0x1A:
                     {
                         state.A = state.Memory.AsSpan()[(state.D << 8) + state.E];
-                        break;
-                    }
-
-                case 0x21:
-                    {
-                        state.H = state.Memory.AsSpan()[state.PC + 1];
-                        state.L = state.Memory.AsSpan()[state.PC];
-                        state.PC += 2;
-                        break;
-                    }
-
-                case 0x23:
-                    {
-                        if (state.L == 0xFF)
-                        {
-                            state.L = 0;
-                            state.H++;
-                        }
-                        else
-                        {
-                            state.L++;
-                        }
                         break;
                     }
 
@@ -440,7 +438,7 @@ internal static class Helper
                         break;
                     };
 
-                default: { UnimplementedInstruction(ref state); break; }
+                default: { return UnimplementedInstruction(ref state); }
             }
         }
 
