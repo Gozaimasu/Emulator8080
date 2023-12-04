@@ -319,10 +319,15 @@ internal static class Helper
         // DCR
         if ((opcode & 0xC7) == 0x05)
         {
-            // TODO : gérer offset == 6 => DCR M
-
             // Récupération de l'offset
             int offset = (opcode >> 3) & 0x07;
+
+            if (offset == 6)
+            {
+                // DCR M
+                return UnimplementedInstruction(ref state);
+            }
+
             // Récupération du registre correspondant et on décrémente la valeur
             int res = state.GetRegister(offset) - 1;
             ConditionCodes cc = state.CC;
