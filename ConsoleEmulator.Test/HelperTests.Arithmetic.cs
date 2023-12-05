@@ -362,6 +362,7 @@ public partial class HelperTests
         Assert.Equal(0, done);
         Assert.Equal((byte)(expectedValue & 0xFF), state.C);
         Assert.Equal((byte)((expectedValue >> 8) & 0xFF), state.B);
+        Assert.Equal(1, state.PC);
     }
 
     [Theory]
@@ -384,6 +385,7 @@ public partial class HelperTests
         Assert.Equal(0, done);
         Assert.Equal((byte)(expectedValue & 0xFF), state.E);
         Assert.Equal((byte)((expectedValue >> 8) & 0xFF), state.D);
+        Assert.Equal(1, state.PC);
     }
 
     [Theory]
@@ -406,6 +408,7 @@ public partial class HelperTests
         Assert.Equal(0, done);
         Assert.Equal((byte)(expectedValue & 0xFF), state.L);
         Assert.Equal((byte)((expectedValue >> 8) & 0xFF), state.H);
+        Assert.Equal(1, state.PC);
     }
 
     [Theory]
@@ -426,6 +429,7 @@ public partial class HelperTests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(expectedValue, state.SP);
+        Assert.Equal(1, state.PC);
     }
 
     [Theory]

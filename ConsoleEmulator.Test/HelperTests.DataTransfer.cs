@@ -50,6 +50,7 @@ public partial class HelperTests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(0x01, state.B);
+        Assert.Equal(2, state.PC);
     }
 
     [Fact]
@@ -68,6 +69,7 @@ public partial class HelperTests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(0x01, state.C);
+        Assert.Equal(2, state.PC);
     }
 
     [Fact]
@@ -86,6 +88,7 @@ public partial class HelperTests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(0x01, state.D);
+        Assert.Equal(2, state.PC);
     }
 
     [Fact]
@@ -104,6 +107,7 @@ public partial class HelperTests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(0x01, state.E);
+        Assert.Equal(2, state.PC);
     }
 
     [Fact]
@@ -122,6 +126,7 @@ public partial class HelperTests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(0x01, state.H);
+        Assert.Equal(2, state.PC);
     }
 
     [Fact]
@@ -140,6 +145,7 @@ public partial class HelperTests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(0x01, state.L);
+        Assert.Equal(2, state.PC);
     }
 
     [Fact]
@@ -158,6 +164,7 @@ public partial class HelperTests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(0x01, state.A);
+        Assert.Equal(2, state.PC);
     }
 
     [Theory]
@@ -193,6 +200,7 @@ public partial class HelperTests
         Assert.Equal(0, done);
         Assert.Equal(0x01, state.C);
         Assert.Equal(0x02, state.B);
+        Assert.Equal(3, state.PC);
     }
 
     [Fact]
@@ -212,6 +220,7 @@ public partial class HelperTests
         Assert.Equal(0, done);
         Assert.Equal(0x01, state.E);
         Assert.Equal(0x02, state.D);
+        Assert.Equal(3, state.PC);
     }
 
     [Fact]
@@ -231,6 +240,7 @@ public partial class HelperTests
         Assert.Equal(0, done);
         Assert.Equal(0x01, state.L);
         Assert.Equal(0x02, state.H);
+        Assert.Equal(3, state.PC);
     }
 
     [Fact]
@@ -249,6 +259,7 @@ public partial class HelperTests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(0x0201, state.SP);
+        Assert.Equal(3, state.PC);
     }
 
     [Fact]
