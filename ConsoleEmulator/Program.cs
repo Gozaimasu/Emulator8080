@@ -398,13 +398,6 @@ internal static class Helper
                         break;
                     }
 
-                case 0x31:
-                    {
-                        state.SP = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
-                        state.PC += 2;
-                        break;
-                    }
-
                 case 0x77:
                     {
                         state.Memory.AsSpan()[(state.H << 8) + state.L] = state.A;
