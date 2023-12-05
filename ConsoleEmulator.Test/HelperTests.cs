@@ -49,6 +49,7 @@ public partial class HelperTests
         Assert.Equal(1, state.CC.PAD);
         Assert.Equal(1, state.CC.S);
         Assert.Equal(1, state.CC.Z);
+        Assert.Equal(1, state.PC);
     }
 
 }
