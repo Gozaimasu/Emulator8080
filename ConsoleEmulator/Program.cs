@@ -386,17 +386,22 @@ internal static class Helper
                 case 3: { state.SP++; break; } // LXI SP,D16
             }
         }
+        // LDAX
+        else if ((opcode & 0xCF) == 0x0A)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            switch (offset)
+            {
+                case 0: { state.A = state.Memory.AsSpan()[(state.B << 8) + state.C]; break; } // LDAX B
+                case 1: { state.A = state.Memory.AsSpan()[(state.D << 8) + state.E]; break; } // LDAX D
+                default: return UnimplementedInstruction(ref state);
+            }
+        }
         else
         {
             switch (opcode)
             {
                 case 0x00: { break; } // NOP
-
-                case 0x1A:
-                    {
-                        state.A = state.Memory.AsSpan()[(state.D << 8) + state.E];
-                        break;
-                    }
 
                 case 0x77:
                     {
