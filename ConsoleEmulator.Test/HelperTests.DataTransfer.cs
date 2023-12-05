@@ -19,6 +19,195 @@ public partial class HelperTests
     }
 
     [Theory]
+    [MemberData(nameof(EmulateTestData.GetMOVBData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenMOVB_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            B = initialB,
+            C = initialC,
+            D = initialD,
+            E = initialE,
+            H = initialH,
+            L = initialL,
+            A = initialA,
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedValue, state.B);
+        Assert.Equal(1, state.PC);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetMOVCData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenMOVC_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            B = initialB,
+            C = initialC,
+            D = initialD,
+            E = initialE,
+            H = initialH,
+            L = initialL,
+            A = initialA,
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedValue, state.C);
+        Assert.Equal(1, state.PC);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetMOVDData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenMOVD_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            B = initialB,
+            C = initialC,
+            D = initialD,
+            E = initialE,
+            H = initialH,
+            L = initialL,
+            A = initialA,
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedValue, state.D);
+        Assert.Equal(1, state.PC);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetMOVEData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenMOVE_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            B = initialB,
+            C = initialC,
+            D = initialD,
+            E = initialE,
+            H = initialH,
+            L = initialL,
+            A = initialA,
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedValue, state.E);
+        Assert.Equal(1, state.PC);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetMOVHData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenMOVH_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            B = initialB,
+            C = initialC,
+            D = initialD,
+            E = initialE,
+            H = initialH,
+            L = initialL,
+            A = initialA,
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedValue, state.H);
+        Assert.Equal(1, state.PC);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetMOVLData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenMOVL_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            B = initialB,
+            C = initialC,
+            D = initialD,
+            E = initialE,
+            H = initialH,
+            L = initialL,
+            A = initialA,
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedValue, state.L);
+        Assert.Equal(1, state.PC);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetMOVAData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenMOVA_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            B = initialB,
+            C = initialC,
+            D = initialD,
+            E = initialE,
+            H = initialH,
+            L = initialL,
+            A = initialA,
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedValue, state.A);
+        Assert.Equal(1, state.PC);
+    }
+
+    [Theory]
     [MemberData(nameof(DisassembleTestData.GetMVIData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenMVI_ShouldSucceed(byte[] data, string expectedOutput)
     {
