@@ -397,6 +397,20 @@ internal static class Helper
                 default: return UnimplementedInstruction(ref state);
             }
         }
+        // MOV
+        else if ((opcode & 0xC0) == 0x40)
+        {
+            // Récupération des offsets
+            int offsetDestination = (opcode >> 3) & 0x07;
+            int offsetSource = opcode & 0x07;
+
+            if (offsetDestination == 6 || offsetSource == 6)
+            {
+                // MOV ?, M ou MOV M, ?
+                return UnimplementedInstruction(ref state);
+            }
+            state.SetRegister(offsetDestination, state.GetRegister(offsetSource));
+        }
         else
         {
             switch (opcode)
