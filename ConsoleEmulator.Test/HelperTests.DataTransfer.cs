@@ -339,6 +339,50 @@ public partial class HelperTests
     }
 
     [Theory]
+    [MemberData(nameof(EmulateTestData.GetLDAXBData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenLDAXB_ShouldSucceed(byte[] data, byte memoryLocationLow, byte memoryLocationHigh, byte expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            C = memoryLocationLow,
+            B = memoryLocationHigh
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedValue, state.A);
+        Assert.Equal(1, state.PC);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetLDAXDData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenLDAXD_ShouldSucceed(byte[] data, byte memoryLocationLow, byte memoryLocationHigh, byte expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            E = memoryLocationLow,
+            D = memoryLocationHigh
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedValue, state.A);
+        Assert.Equal(1, state.PC);
+    }
+
+    [Theory]
     [MemberData(nameof(DisassembleTestData.GetSTAXData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenSTAX_ShouldSucceed(byte[] data, string expectedOutput)
     {
