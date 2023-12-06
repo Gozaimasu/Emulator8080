@@ -361,6 +361,104 @@ internal static class Helper
             state.SetRegister(offset, state.Memory.AsSpan()[state.PC]);
             state.PC++;
         }
+        // JCondition
+        else if ((opcode & 0xC7) == 0xC2)
+        {
+            // Récupération de la condition
+            int condition = (opcode >> 3) & 0x07;
+
+            switch (condition)
+            {
+                case 0:
+                    // JNZ adr
+                    if (state.CC.Z != 1)
+                    {
+                        state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    }
+                    else
+                    {
+                        state.PC += 2;
+                    }
+                    break;
+                case 1:
+                    // JZ adr
+                    if (state.CC.Z == 1)
+                    {
+                        state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    }
+                    else
+                    {
+                        state.PC += 2;
+                    }
+                    break;
+                case 2:
+                    // JNC adr
+                    if (state.CC.CY != 1)
+                    {
+                        state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    }
+                    else
+                    {
+                        state.PC += 2;
+                    }
+                    break;
+                case 3:
+                    // JC adr
+                    if (state.CC.CY == 1)
+                    {
+                        state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    }
+                    else
+                    {
+                        state.PC += 2;
+                    }
+                    break;
+                case 4:
+                    // JPO adr
+                    if (state.CC.P != 1)
+                    {
+                        state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    }
+                    else
+                    {
+                        state.PC += 2;
+                    }
+                    break;
+                case 5:
+                    // JPE adr
+                    if (state.CC.P == 1)
+                    {
+                        state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    }
+                    else
+                    {
+                        state.PC += 2;
+                    }
+                    break;
+                case 6:
+                    // JP adr
+                    if (state.CC.S != 1)
+                    {
+                        state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    }
+                    else
+                    {
+                        state.PC += 2;
+                    }
+                    break;
+                case 7:
+                    // JM adr
+                    if (state.CC.S == 1)
+                    {
+                        state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
+                    }
+                    else
+                    {
+                        state.PC += 2;
+                    }
+                    break;
+            }
+        }
         // LXI
         else if ((opcode & 0xCF) == 0x01)
         {
