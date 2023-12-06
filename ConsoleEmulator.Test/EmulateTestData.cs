@@ -107,6 +107,38 @@ internal class EmulateTestData
         yield return new object[] { new byte[] { 0x6F }, 0x00 /* B */, 0x01 /* C */, 0x02 /* D */, 0x03 /* E */, 0x04 /* H */, 0x05 /* L */, 0x06 /* A */, 0x06 /* expected */ };
     }
 
+    public static IEnumerable<object[]> GetMOVMData()
+    {
+        byte[] dataB = new byte[259];
+        dataB[0] = 0x70;
+        dataB[258] = 0x00;
+        yield return new object[] { dataB, 0x03 /* B */, 0x04 /* C */, 0x05 /* D */, 0x06 /* E */, 0x01 /* H */, 0x02 /* L */, 0x07 /* A */, 0x03 /* expected */ };
+        byte[] dataC = new byte[259];
+        dataC[0] = 0x71;
+        dataC[258] = 0x00;
+        yield return new object[] { dataC, 0x03 /* B */, 0x04 /* C */, 0x05 /* D */, 0x06 /* E */, 0x01 /* H */, 0x02 /* L */, 0x07 /* A */, 0x04 /* expected */ };
+        byte[] dataD = new byte[259];
+        dataD[0] = 0x72;
+        dataD[258] = 0x00;
+        yield return new object[] { dataD, 0x03 /* B */, 0x04 /* C */, 0x05 /* D */, 0x06 /* E */, 0x01 /* H */, 0x02 /* L */, 0x07 /* A */, 0x05 /* expected */ };
+        byte[] dataE = new byte[259];
+        dataE[0] = 0x73;
+        dataE[258] = 0x00;
+        yield return new object[] { dataE, 0x03 /* B */, 0x04 /* C */, 0x05 /* D */, 0x06 /* E */, 0x01 /* H */, 0x02 /* L */, 0x07 /* A */, 0x06 /* expected */ };
+        byte[] dataH = new byte[259];
+        dataH[0] = 0x74;
+        dataH[258] = 0x00;
+        yield return new object[] { dataH, 0x03 /* B */, 0x04 /* C */, 0x05 /* D */, 0x06 /* E */, 0x01 /* H */, 0x02 /* L */, 0x07 /* A */, 0x01 /* expected */ };
+        byte[] dataL = new byte[259];
+        dataL[0] = 0x75;
+        dataL[258] = 0x00;
+        yield return new object[] { dataL, 0x03 /* B */, 0x04 /* C */, 0x05 /* D */, 0x06 /* E */, 0x01 /* H */, 0x02 /* L */, 0x07 /* A */, 0x02 /* expected */ };
+        byte[] dataA = new byte[259];
+        dataA[0] = 0x77;
+        dataA[258] = 0x00;
+        yield return new object[] { dataA, 0x03 /* B */, 0x04 /* C */, 0x05 /* D */, 0x06 /* E */, 0x01 /* H */, 0x02 /* L */, 0x07 /* A */, 0x07 /* expected */ };
+    }
+
     public static IEnumerable<object[]> GetMOVAData()
     {
         yield return new object[] { new byte[] { 0x78 }, 0x00 /* B */, 0x01 /* C */, 0x02 /* D */, 0x03 /* E */, 0x04 /* H */, 0x05 /* L */, 0x06 /* A */, 0x00 /* expected */ };

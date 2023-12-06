@@ -181,6 +181,33 @@ public partial class HelperTests
     }
 
     [Theory]
+    [MemberData(nameof(EmulateTestData.GetMOVMData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenMOVM_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            B = initialB,
+            C = initialC,
+            D = initialD,
+            E = initialE,
+            H = initialH,
+            L = initialL,
+            A = initialA,
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedValue, state.Memory[(state.H << 8) + state.L]);
+        Assert.Equal(1, state.PC);
+    }
+
+    [Theory]
     [MemberData(nameof(EmulateTestData.GetMOVAData), MemberType = typeof(EmulateTestData))]
     public void Emulate8080Op_WhenMOVA_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
     {
