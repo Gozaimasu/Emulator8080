@@ -66,6 +66,28 @@ public partial class HelperTests
         Assert.Equal($"0000\tCALL\t$0201{Environment.NewLine}", debugOutput.Output);
     }
 
+    [Fact]
+    public void Emulate8080Op_WhenCALL_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0xCD, 0x01, 0x02, 0x02, 0x01],
+            PC = 0x00,
+            SP = 5
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(3, state.SP);
+        Assert.Equal(0x0201, state.PC);
+        Assert.Equal(0x01, state.Memory[3]);
+        Assert.Equal(0x00, state.Memory[4]);
+    }
+
     [Theory]
     [MemberData(nameof(DisassembleTestData.GetCConditionData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenCCondition_ShouldSucceed(byte[] data, string expectedOutput)
