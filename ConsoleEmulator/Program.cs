@@ -404,24 +404,26 @@ internal static class Helper
             int offsetDestination = (opcode >> 3) & 0x07;
             int offsetSource = opcode & 0x07;
 
-            if (offsetDestination == 6 || offsetSource == 6)
+            if (offsetSource == 6)
             {
-                // MOV ?, M ou MOV M, ?
+                // MOV r, M
                 return UnimplementedInstruction(ref state);
             }
-            state.SetRegister(offsetDestination, state.GetRegister(offsetSource));
+            if (offsetDestination == 6)
+            {
+                // MOV M, r
+                state.Memory.AsSpan()[(state.H << 8) + state.L] = state.GetRegister(offsetSource);
+            }
+            else
+            {
+                state.SetRegister(offsetDestination, state.GetRegister(offsetSource));
+            }
         }
         else
         {
             switch (opcode)
             {
                 case 0x00: { break; } // NOP
-
-                case 0x77:
-                    {
-                        state.Memory.AsSpan()[(state.H << 8) + state.L] = state.A;
-                        break;
-                    }
 
                 case 0xC2:
                     {
