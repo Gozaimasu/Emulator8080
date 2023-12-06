@@ -51,6 +51,32 @@ public partial class HelperTests
         Assert.Equal(expectedOutput, debugOutput.Output);
     }
 
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetJConditionData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenJCondition_ShouldSucceed(byte[] data, byte initialZ, byte initialCY, byte initialP, byte initialS, ushort expectedPC)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            CC = new ConditionCodes
+            {
+                Z = initialZ,
+                CY = initialCY,
+                P = initialP,
+                S = initialS
+            }
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedPC, state.PC);
+    }
+
     [Fact]
     public void Disassemble8080Op_WhenCALL_ShouldSucceed()
     {
