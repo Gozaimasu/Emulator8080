@@ -351,10 +351,13 @@ internal static class Helper
             if (offset == 6)
             {
                 // DCR M
-                return UnimplementedInstruction(ref state);
+                state.Memory.AsSpan()[(state.H << 8) + state.L] = state.Memory.AsSpan()[state.PC];
+            }
+            else
+            {
+                state.SetRegister(offset, state.Memory.AsSpan()[state.PC]);
             }
 
-            state.SetRegister(offset, state.Memory.AsSpan()[state.PC]);
             state.PC++;
         }
         // JCondition
