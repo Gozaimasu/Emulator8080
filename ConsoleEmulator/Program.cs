@@ -519,6 +519,13 @@ internal static class Helper
             {
                 case 0x00: { break; } // NOP
 
+                case 0xE6:
+                    {
+                        // ANI data
+                        state.A &= state.Memory.AsSpan()[state.PC++];
+                        break;
+                    }
+
                 case 0xC2:
                     {
                         // JNZ adr
