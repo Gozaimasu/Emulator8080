@@ -33,6 +33,26 @@ public partial class HelperTests
         Assert.Equal($"0000\tANI\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
+    [Fact]
+    public void Emulate8080Op_WhenANI_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0xE6, 0xA5],
+            PC = 0,
+            A = 0xF0
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0xA0, state.A);
+        Assert.Equal(2, state.PC);
+    }
+
     [Theory]
     [MemberData(nameof(DisassembleTestData.GetXRAData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenXRA_ShouldSucceed(byte[] data, string expectedOutput)
