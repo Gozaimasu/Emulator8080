@@ -145,6 +145,26 @@ public partial class HelperTests
         Assert.Equal($"0000\tRET{Environment.NewLine}", debugOutput.Output);
     }
 
+    [Fact]
+    public void Emulate8080Op_WhenRET_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0xC9, 0x02, 0x01],
+            PC = 0x00,
+            SP = 1
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0x0102, state.PC);
+        Assert.Equal(3, state.SP);
+    }
+
     [Theory]
     [MemberData(nameof(DisassembleTestData.GetRConditionData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenRCondition_ShouldSucceed(byte[] data, string expectedOutput)
