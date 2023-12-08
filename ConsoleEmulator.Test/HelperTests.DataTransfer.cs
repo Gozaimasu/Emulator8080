@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace ConsoleEmulator.Test;
 
 public partial class HelperTests
@@ -361,6 +363,31 @@ public partial class HelperTests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(0x01, state.L);
+        Assert.Equal(2, state.PC);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenMVIM_ShouldSucceed()
+    {
+        byte[] data = new byte[259];
+        data[0] = 0x36;
+        data[1] = 0x01;
+        data[258] = 0x00;
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            H = 1,
+            L = 2
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0x01, state.Memory[258]);
         Assert.Equal(2, state.PC);
     }
 
