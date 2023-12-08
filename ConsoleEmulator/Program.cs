@@ -334,14 +334,8 @@ internal static class Helper
             int res = state.GetRegister(offset) - 1;
             ConditionCodes cc = state.CC;
             // Modification de CC
-            if (res == 0)
-            {
-                cc.Z = 1;
-            }
-            if ((res & 0x80) != 0)
-            {
-                cc.S = 1;
-            }
+            cc.Z = res == 0 ? (byte)1 : (byte)0;
+            cc.S = (res & 0x80) != 0 ? (byte)1 : (byte)0;
             cc.P = (byte)(res ^ (res | 1));
             // Affectation de la nouvelle valeur de CC
             state.CC = cc;
