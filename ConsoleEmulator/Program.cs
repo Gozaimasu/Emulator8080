@@ -494,6 +494,19 @@ internal static class Helper
                 default: return UnimplementedInstruction(ref state);
             }
         }
+        // PUSH
+        else if ((opcode & 0xCF) == 0xC5)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            switch (offset)
+            {
+                case 0: { state.Memory.AsSpan()[state.SP - 2] = state.C; state.Memory.AsSpan()[state.SP - 1] = state.B; break; } // PUSH B
+                case 1: { state.Memory.AsSpan()[state.SP - 2] = state.E; state.Memory.AsSpan()[state.SP - 1] = state.D; break; } // PUSH D
+                case 2: { state.Memory.AsSpan()[state.SP - 2] = state.L; state.Memory.AsSpan()[state.SP - 1] = state.H; break; } // PUSH H
+                default: return UnimplementedInstruction(ref state);
+            }
+            state.SP -= 2;
+        }
         // MOV
         else if ((opcode & 0xC0) == 0x40)
         {
@@ -558,6 +571,7 @@ internal static class Helper
 
                 case 0xCD:
                     {
+                        // CALL
                         Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.SP - 2]) = state.PC;
                         state.SP -= 2;
                         state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
