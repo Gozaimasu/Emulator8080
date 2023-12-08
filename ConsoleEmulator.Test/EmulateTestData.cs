@@ -169,4 +169,12 @@ internal class EmulateTestData
         yield return new object[] { new byte[3] { 0xFA, 0x01, 0x02 }, 0x00, 0x00, 0x00, 0x00, 0x03 };
         yield return new object[] { new byte[3] { 0xFA, 0x01, 0x02 }, 0x00, 0x00, 0x00, 0x01, 0x0201 };
     }
+
+    public static IEnumerable<object[]> GetCPIData()
+    {
+        yield return new object[] { new byte[] { 0xFE, 0x0F }, 0x10, 1, 1, 1, 1, 0, 0, 0, 0 };
+        yield return new object[] { new byte[] { 0xFE, 0x0F }, 0x0F, 0, 1, 0, 1, 1, 0, 1, 0 };
+        yield return new object[] { new byte[] { 0xFE, 0x0F }, 0x0E, 1, 0, 1, 0, 0, 1, 0, 1 };
+        yield return new object[] { new byte[] { 0xFE, 0x90 }, 0x0F, 1, 1, 1, 0, 0, 0, 0, 1 };
+    }
 }
