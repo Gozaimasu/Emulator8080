@@ -564,6 +564,22 @@ internal static class Helper
                         break;
                     };
 
+                case 0xFE:
+                    {
+                        // CPI
+                        byte value = state.Memory.AsSpan()[state.PC++];
+                        int result = state.A - value;
+                        ConditionCodes cc = state.CC;
+                        // Modification de CC
+                        cc.Z = result == 0 ? (byte)1 : (byte)0;
+                        cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
+                        cc.P = (byte)(result ^ (result | 1));
+                        cc.CY = state.A < value ? (byte)1 : (byte)0;
+                        // Affectation de la nouvelle valeur de CC
+                        state.CC = cc;
+                        break;
+                    }
+
                 default: { return UnimplementedInstruction(ref state); }
             }
         }
