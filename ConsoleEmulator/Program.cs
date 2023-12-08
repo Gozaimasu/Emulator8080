@@ -312,6 +312,8 @@ internal static class Helper
         byte opcode = state.Memory.AsSpan()[state.PC];
 
         // Pour debugger
+        DebugOutput.WriteLine(string.Format("A={0:X2}, BC={1:X2}{2:X2}, DE={3:X2}{4:X2}, HL={5:X2}{6:X2}, PC={8:X4}, SP={7:X4}", state.A, state.B, state.C, state.D, state.E, state.H, state.L, state.SP, state.PC));
+        DebugOutput.WriteLine(string.Format("Z={0}, S={1}, P={2}, CY={3}, AC={4}, PAD={5}", state.CC.Z, state.CC.S, state.CC.P, state.CC.CY, state.CC.AC, state.CC.PAD));
         Disassemble8080Op(state.Memory, state.PC);
 
         state.PC++;
@@ -561,9 +563,6 @@ internal static class Helper
                 default: { return UnimplementedInstruction(ref state); }
             }
         }
-
-        // Pour debugger
-        DebugOutput.WriteLine(string.Format("A={0:X2}, BC={1:X2}{2:X2}, DE={3:X2}{4:X2}, HL={5:X2}{6:X2}, PC={8:X4}, SP={7:X4}", state.A, state.B, state.C, state.D, state.E, state.H, state.L, state.SP, state.PC));
         return 0;
     }
 }
