@@ -107,6 +107,78 @@ public partial class HelperTests
     }
 
     [Fact]
+    public void Emulate8080Op_WhenPOPB_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0xC1, 0x0A, 0x0B],
+            B = 0x00,
+            C = 0x00,
+            PC = 0,
+            SP = 1
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(1, state.PC);
+        Assert.Equal(0x0A, state.C);
+        Assert.Equal(0x0B, state.B);
+        Assert.Equal(3, state.SP);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenPOPD_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0xD1, 0x0A, 0x0B],
+            D = 0x00,
+            E = 0x00,
+            PC = 0,
+            SP = 1
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(1, state.PC);
+        Assert.Equal(0x0A, state.E);
+        Assert.Equal(0x0B, state.D);
+        Assert.Equal(3, state.SP);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenPOPH_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0xE1, 0x0A, 0x0B],
+            H = 0x00,
+            L = 0x00,
+            PC = 0,
+            SP = 1
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(1, state.PC);
+        Assert.Equal(0x0A, state.L);
+        Assert.Equal(0x0B, state.H);
+        Assert.Equal(3, state.SP);
+    }
+
+    [Fact]
     public void Disassemble8080Op_WhenXTHL_ShouldSucceed()
     {
         // Arrange
