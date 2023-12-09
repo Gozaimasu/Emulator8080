@@ -516,6 +516,19 @@ internal static class Helper
                 default: return UnimplementedInstruction(ref state);
             }
         }
+        // POP
+        else if ((opcode & 0xCF) == 0xC1)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            switch (offset)
+            {
+                case 0: { state.C = state.Memory.AsSpan()[state.SP]; state.B = state.Memory.AsSpan()[state.SP + 1]; break; } // POP B
+                case 1: { state.E = state.Memory.AsSpan()[state.SP]; state.D = state.Memory.AsSpan()[state.SP + 1]; break; } // POP D
+                case 2: { state.L = state.Memory.AsSpan()[state.SP]; state.H = state.Memory.AsSpan()[state.SP + 1]; break; } // POP H
+                default: return UnimplementedInstruction(ref state);
+            }
+            state.SP += 2;
+        }
         // PUSH
         else if ((opcode & 0xCF) == 0xC5)
         {
