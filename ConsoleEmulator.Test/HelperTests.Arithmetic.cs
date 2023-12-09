@@ -499,6 +499,40 @@ public partial class HelperTests
         Assert.Equal(expectedOutput, debugOutput.Output);
     }
 
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetDADData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenDADB_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte initialSP, byte expectedH, byte expectedL, byte initialCY, byte expectedCY)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            B = initialB,
+            C = initialC,
+            D = initialD,
+            E = initialE,
+            H = initialH,
+            L = initialL,
+            A = initialA,
+            SP = initialSP,
+            CC = new ConditionCodes()
+            {
+                CY = initialCY
+            }
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedH, state.H);
+        Assert.Equal(expectedL, state.L);
+        Assert.Equal(expectedCY, state.CC.CY);
+    }
+
     [Fact]
     public void Disassemble8080Op_WhenDAA_ShouldSucceed()
     {
