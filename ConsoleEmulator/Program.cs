@@ -600,6 +600,18 @@ internal static class Helper
                         break;
                     };
 
+                case 0xEB:
+                    {
+                        // XCHG
+                        byte temp = state.H;
+                        state.H = state.D;
+                        state.D = temp;
+                        temp = state.L;
+                        state.L = state.E;
+                        state.E = temp;
+                        break;
+                    }
+
                 case 0xFE:
                     {
                         // CPI
