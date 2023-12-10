@@ -33,6 +33,26 @@ public partial class HelperTests
         Assert.Equal($"0000\tANI\t#$01{Environment.NewLine}", debugOutput.Output);
     }
 
+    [Fact]
+    public void Emulate8080Op_WhenANI_ShouldSucceed()
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = [0xE6, 0xA5],
+            PC = 0,
+            A = 0xF0
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0xA0, state.A);
+        Assert.Equal(2, state.PC);
+    }
+
     [Theory]
     [MemberData(nameof(DisassembleTestData.GetXRAData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenXRA_ShouldSucceed(byte[] data, string expectedOutput)
@@ -124,6 +144,38 @@ public partial class HelperTests
         // Assert
         Assert.Equal(2, read);
         Assert.Equal($"0000\tCPI\t#$01{Environment.NewLine}", debugOutput.Output);
+    }
+
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetCPIData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenCPI_ShouldSucceed(byte[] data, byte registerA, byte initialZ, byte initialS, byte initialP, byte initialCY, byte expectedZ, byte expectedS, byte expectedP, byte expectedCY)
+    {
+        // Arrange
+        State8080 state = new()
+        {
+            Memory = data,
+            PC = 0,
+            A = registerA,
+            CC = new ConditionCodes()
+            {
+                Z = initialZ,
+                S = initialS,
+                P = initialP,
+                CY = initialCY
+            }
+        };
+
+        // Act
+        int done = Helper.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(registerA, state.A);
+        Assert.Equal(2, state.PC);
+        Assert.Equal(expectedZ, state.CC.Z);
+        Assert.Equal(expectedS, state.CC.S);
+        Assert.Equal(expectedP, state.CC.P);
+        Assert.Equal(expectedCY, state.CC.CY);
     }
 
     [Fact]

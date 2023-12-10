@@ -312,6 +312,8 @@ internal static class Helper
         byte opcode = state.Memory.AsSpan()[state.PC];
 
         // Pour debugger
+        DebugOutput.WriteLine(string.Format("A={0:X2}, BC={1:X2}{2:X2}, DE={3:X2}{4:X2}, HL={5:X2}{6:X2}, PC={8:X4}, SP={7:X4}", state.A, state.B, state.C, state.D, state.E, state.H, state.L, state.SP, state.PC));
+        DebugOutput.WriteLine(string.Format("Z={0}, S={1}, P={2}, CY={3}, AC={4}, PAD={5}", state.CC.Z, state.CC.S, state.CC.P, state.CC.CY, state.CC.AC, state.CC.PAD));
         Disassemble8080Op(state.Memory, state.PC);
 
         state.PC++;
@@ -332,14 +334,8 @@ internal static class Helper
             int res = state.GetRegister(offset) - 1;
             ConditionCodes cc = state.CC;
             // Modification de CC
-            if (res == 0)
-            {
-                cc.Z = 1;
-            }
-            if ((res & 0x80) != 0)
-            {
-                cc.S = 1;
-            }
+            cc.Z = res == 0 ? (byte)1 : (byte)0;
+            cc.S = (res & 0x80) != 0 ? (byte)1 : (byte)0;
             cc.P = (byte)(res ^ (res | 1));
             // Affectation de la nouvelle valeur de CC
             state.CC = cc;
@@ -355,10 +351,13 @@ internal static class Helper
             if (offset == 6)
             {
                 // DCR M
-                return UnimplementedInstruction(ref state);
+                state.Memory.AsSpan()[(state.H << 8) + state.L] = state.Memory.AsSpan()[state.PC];
+            }
+            else
+            {
+                state.SetRegister(offset, state.Memory.AsSpan()[state.PC]);
             }
 
-            state.SetRegister(offset, state.Memory.AsSpan()[state.PC]);
             state.PC++;
         }
         // JCondition
@@ -484,6 +483,28 @@ internal static class Helper
                 case 3: { state.SP++; break; } // LXI SP,D16
             }
         }
+        // DAD
+        else if ((opcode & 0xCF) == 0x09)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            int result = (state.H << 8) + state.L;
+            ConditionCodes cc = state.CC;
+            cc.CY = 0;
+            switch (offset)
+            {
+                case 0: { result += (state.B << 8) + state.C; break; }// DAD B
+                case 1: { result += (state.D << 8) + state.E; break; }// DAD D
+                case 2: { result <<= 1; break; }// DAD J
+                case 3: { result += state.SP; break; }// DAD SP
+            }
+            state.L = (byte)(result & 0xFF);
+            state.H = (byte)((result >> 8) & 0xFF);
+            if ((result & 0xFFFF0000) != 0)
+            {
+                cc.CY = 1;
+            }
+            state.CC = cc;
+        }
         // LDAX
         else if ((opcode & 0xCF) == 0x0A)
         {
@@ -494,6 +515,32 @@ internal static class Helper
                 case 1: { state.A = state.Memory.AsSpan()[(state.D << 8) + state.E]; break; } // LDAX D
                 default: return UnimplementedInstruction(ref state);
             }
+        }
+        // POP
+        else if ((opcode & 0xCF) == 0xC1)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            switch (offset)
+            {
+                case 0: { state.C = state.Memory.AsSpan()[state.SP]; state.B = state.Memory.AsSpan()[state.SP + 1]; break; } // POP B
+                case 1: { state.E = state.Memory.AsSpan()[state.SP]; state.D = state.Memory.AsSpan()[state.SP + 1]; break; } // POP D
+                case 2: { state.L = state.Memory.AsSpan()[state.SP]; state.H = state.Memory.AsSpan()[state.SP + 1]; break; } // POP H
+                default: return UnimplementedInstruction(ref state);
+            }
+            state.SP += 2;
+        }
+        // PUSH
+        else if ((opcode & 0xCF) == 0xC5)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            switch (offset)
+            {
+                case 0: { state.Memory.AsSpan()[state.SP - 2] = state.C; state.Memory.AsSpan()[state.SP - 1] = state.B; break; } // PUSH B
+                case 1: { state.Memory.AsSpan()[state.SP - 2] = state.E; state.Memory.AsSpan()[state.SP - 1] = state.D; break; } // PUSH D
+                case 2: { state.Memory.AsSpan()[state.SP - 2] = state.L; state.Memory.AsSpan()[state.SP - 1] = state.H; break; } // PUSH H
+                default: return UnimplementedInstruction(ref state);
+            }
+            state.SP -= 2;
         }
         // MOV
         else if ((opcode & 0xC0) == 0x40)
@@ -522,6 +569,13 @@ internal static class Helper
             switch (opcode)
             {
                 case 0x00: { break; } // NOP
+
+                case 0xE6:
+                    {
+                        // ANI data
+                        state.A &= state.Memory.AsSpan()[state.PC++];
+                        break;
+                    }
 
                 case 0xC2:
                     {
@@ -552,18 +606,44 @@ internal static class Helper
 
                 case 0xCD:
                     {
+                        // CALL
                         Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.SP - 2]) = state.PC;
                         state.SP -= 2;
                         state.PC = Unsafe.As<byte, ushort>(ref state.Memory.AsSpan()[state.PC]);
                         break;
                     };
 
+                case 0xEB:
+                    {
+                        // XCHG
+                        byte temp = state.H;
+                        state.H = state.D;
+                        state.D = temp;
+                        temp = state.L;
+                        state.L = state.E;
+                        state.E = temp;
+                        break;
+                    }
+
+                case 0xFE:
+                    {
+                        // CPI
+                        byte value = state.Memory.AsSpan()[state.PC++];
+                        int result = state.A - value;
+                        ConditionCodes cc = state.CC;
+                        // Modification de CC
+                        cc.Z = result == 0 ? (byte)1 : (byte)0;
+                        cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
+                        cc.P = (byte)(result ^ (result | 1));
+                        cc.CY = state.A < value ? (byte)1 : (byte)0;
+                        // Affectation de la nouvelle valeur de CC
+                        state.CC = cc;
+                        break;
+                    }
+
                 default: { return UnimplementedInstruction(ref state); }
             }
         }
-
-        // Pour debugger
-        DebugOutput.WriteLine(string.Format("A={0:X2}, BC={1:X2}{2:X2}, DE={3:X2}{4:X2}, HL={5:X2}{6:X2}, PC={8:X4}, SP={7:X4}", state.A, state.B, state.C, state.D, state.E, state.H, state.L, state.SP, state.PC));
         return 0;
     }
 }
