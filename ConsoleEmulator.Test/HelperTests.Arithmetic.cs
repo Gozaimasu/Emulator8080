@@ -501,7 +501,7 @@ public partial class HelperTests
 
     [Theory]
     [MemberData(nameof(EmulateTestData.GetDADData), MemberType = typeof(EmulateTestData))]
-    public void Emulate8080Op_WhenDADB_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte initialSP, byte expectedH, byte expectedL, byte initialCY, byte expectedCY)
+    public void Emulate8080Op_WhenDAD_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, ushort initialSP, byte expectedH, byte expectedL, byte initialCY, byte expectedCY)
     {
         // Arrange
         State8080 state = new()
@@ -514,7 +514,6 @@ public partial class HelperTests
             E = initialE,
             H = initialH,
             L = initialL,
-            A = initialA,
             SP = initialSP,
             CC = new ConditionCodes()
             {
