@@ -495,7 +495,7 @@ internal static class Helper
                 case 0: { result += (state.B << 8) + state.C; break; }// DAD B
                 case 1: { result += (state.D << 8) + state.E; break; }// DAD D
                 case 2: { result <<= 1; break; }// DAD J
-                case 3: { result += (state.A << 8) + state.SP; break; }// DAD PSW
+                case 3: { result += state.SP; break; }// DAD SP
             }
             state.L = (byte)(result & 0xFF);
             state.H = (byte)((result >> 8) & 0xFF);
