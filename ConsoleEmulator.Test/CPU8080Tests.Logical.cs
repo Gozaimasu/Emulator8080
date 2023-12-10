@@ -1,6 +1,6 @@
 ﻿namespace ConsoleEmulator.Test;
 
-public partial class HelperTests
+public partial class CPU8080Tests
 {
     [Theory]
     [MemberData(nameof(DisassembleTestData.GetANAData), MemberType = typeof(DisassembleTestData))]
@@ -8,10 +8,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
@@ -59,10 +61,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
@@ -90,10 +94,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
@@ -121,10 +127,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
