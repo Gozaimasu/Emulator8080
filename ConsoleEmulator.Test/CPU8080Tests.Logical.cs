@@ -42,7 +42,7 @@ public partial class CPU8080Tests
     {
         // Arrange
         CPU8080 sut = new();
-        sut.Init([0x06, 0xA5], 0);
+        sut.Init([0xE6, 0xA5], 0);
         sut.State.A = 0xF0;
 
         // Act
