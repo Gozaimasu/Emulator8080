@@ -1,6 +1,6 @@
 ﻿namespace ConsoleEmulator;
 
-internal struct State8080
+internal class State8080
 {
     private readonly byte[] _registers = new byte[8];
 
@@ -41,7 +41,6 @@ internal struct State8080
     }
     public ushort SP { get; set; }
     public ushort PC { get; set; }
-    public byte[] Memory { get; set; } = [];
     public ConditionCodes CC { get; set; }
     public byte IntEnable { get; set; }
 

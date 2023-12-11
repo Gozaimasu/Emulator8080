@@ -1,8 +1,8 @@
-using System.Security.Cryptography;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ConsoleEmulator.Test;
 
-public partial class HelperTests
+public partial class CPU8080Tests
 {
     [Theory]
     [MemberData(nameof(DisassembleTestData.GetMOVData), MemberType = typeof(DisassembleTestData))]
@@ -10,10 +10,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
@@ -25,26 +27,23 @@ public partial class HelperTests
     public void Emulate8080Op_WhenMOVB_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = data,
-            PC = 0,
-            B = initialB,
-            C = initialC,
-            D = initialD,
-            E = initialE,
-            H = initialH,
-            L = initialL,
-            A = initialA,
-        };
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.B = initialB;
+        sut.State.C = initialC;
+        sut.State.D = initialD;
+        sut.State.E = initialE;
+        sut.State.H = initialH;
+        sut.State.L = initialL;
+        sut.State.A = initialA;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(expectedValue, state.B);
-        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedValue, sut.State.B);
+        Assert.Equal(1, sut.State.PC);
     }
 
     [Theory]
@@ -52,26 +51,23 @@ public partial class HelperTests
     public void Emulate8080Op_WhenMOVC_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = data,
-            PC = 0,
-            B = initialB,
-            C = initialC,
-            D = initialD,
-            E = initialE,
-            H = initialH,
-            L = initialL,
-            A = initialA,
-        };
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.B = initialB;
+        sut.State.C = initialC;
+        sut.State.D = initialD;
+        sut.State.E = initialE;
+        sut.State.H = initialH;
+        sut.State.L = initialL;
+        sut.State.A = initialA;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(expectedValue, state.C);
-        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedValue, sut.State.C);
+        Assert.Equal(1, sut.State.PC);
     }
 
     [Theory]
@@ -79,26 +75,23 @@ public partial class HelperTests
     public void Emulate8080Op_WhenMOVD_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = data,
-            PC = 0,
-            B = initialB,
-            C = initialC,
-            D = initialD,
-            E = initialE,
-            H = initialH,
-            L = initialL,
-            A = initialA,
-        };
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.B = initialB;
+        sut.State.C = initialC;
+        sut.State.D = initialD;
+        sut.State.E = initialE;
+        sut.State.H = initialH;
+        sut.State.L = initialL;
+        sut.State.A = initialA;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(expectedValue, state.D);
-        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedValue, sut.State.D);
+        Assert.Equal(1, sut.State.PC);
     }
 
     [Theory]
@@ -106,26 +99,23 @@ public partial class HelperTests
     public void Emulate8080Op_WhenMOVE_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = data,
-            PC = 0,
-            B = initialB,
-            C = initialC,
-            D = initialD,
-            E = initialE,
-            H = initialH,
-            L = initialL,
-            A = initialA,
-        };
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.B = initialB;
+        sut.State.C = initialC;
+        sut.State.D = initialD;
+        sut.State.E = initialE;
+        sut.State.H = initialH;
+        sut.State.L = initialL;
+        sut.State.A = initialA;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(expectedValue, state.E);
-        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedValue, sut.State.E);
+        Assert.Equal(1, sut.State.PC);
     }
 
     [Theory]
@@ -133,26 +123,23 @@ public partial class HelperTests
     public void Emulate8080Op_WhenMOVH_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = data,
-            PC = 0,
-            B = initialB,
-            C = initialC,
-            D = initialD,
-            E = initialE,
-            H = initialH,
-            L = initialL,
-            A = initialA,
-        };
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.B = initialB;
+        sut.State.C = initialC;
+        sut.State.D = initialD;
+        sut.State.E = initialE;
+        sut.State.H = initialH;
+        sut.State.L = initialL;
+        sut.State.A = initialA;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(expectedValue, state.H);
-        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedValue, sut.State.H);
+        Assert.Equal(1, sut.State.PC);
     }
 
     [Theory]
@@ -160,26 +147,23 @@ public partial class HelperTests
     public void Emulate8080Op_WhenMOVL_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = data,
-            PC = 0,
-            B = initialB,
-            C = initialC,
-            D = initialD,
-            E = initialE,
-            H = initialH,
-            L = initialL,
-            A = initialA,
-        };
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.B = initialB;
+        sut.State.C = initialC;
+        sut.State.D = initialD;
+        sut.State.E = initialE;
+        sut.State.H = initialH;
+        sut.State.L = initialL;
+        sut.State.A = initialA;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(expectedValue, state.L);
-        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedValue, sut.State.L);
+        Assert.Equal(1, sut.State.PC);
     }
 
     [Theory]
@@ -187,26 +171,23 @@ public partial class HelperTests
     public void Emulate8080Op_WhenMOVM_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = data,
-            PC = 0,
-            B = initialB,
-            C = initialC,
-            D = initialD,
-            E = initialE,
-            H = initialH,
-            L = initialL,
-            A = initialA,
-        };
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.B = initialB;
+        sut.State.C = initialC;
+        sut.State.D = initialD;
+        sut.State.E = initialE;
+        sut.State.H = initialH;
+        sut.State.L = initialL;
+        sut.State.A = initialA;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(expectedValue, state.Memory[(state.H << 8) + state.L]);
-        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedValue, sut.Memory[(sut.State.H << 8) + sut.State.L]);
+        Assert.Equal(1, sut.State.PC);
     }
 
     [Theory]
@@ -214,26 +195,23 @@ public partial class HelperTests
     public void Emulate8080Op_WhenMOVA_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = data,
-            PC = 0,
-            B = initialB,
-            C = initialC,
-            D = initialD,
-            E = initialE,
-            H = initialH,
-            L = initialL,
-            A = initialA,
-        };
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.B = initialB;
+        sut.State.C = initialC;
+        sut.State.D = initialD;
+        sut.State.E = initialE;
+        sut.State.H = initialH;
+        sut.State.L = initialL;
+        sut.State.A = initialA;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(expectedValue, state.A);
-        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedValue, sut.State.A);
+        Assert.Equal(1, sut.State.PC);
     }
 
     [Theory]
@@ -242,10 +220,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(2, read);
@@ -256,114 +236,96 @@ public partial class HelperTests
     public void Emulate8080Op_WhenMVIB_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0x06, 0x01],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0x06, 0x01], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.B);
-        Assert.Equal(2, state.PC);
+        Assert.Equal(0x01, sut.State.B);
+        Assert.Equal(2, sut.State.PC);
     }
 
     [Fact]
     public void Emulate8080Op_WhenMVIC_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0x0E, 0x01],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0x0E, 0x01], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.C);
-        Assert.Equal(2, state.PC);
+        Assert.Equal(0x01, sut.State.C);
+        Assert.Equal(2, sut.State.PC);
     }
 
     [Fact]
     public void Emulate8080Op_WhenMVID_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0x16, 0x01],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0x16, 0x01], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.D);
-        Assert.Equal(2, state.PC);
+        Assert.Equal(0x01, sut.State.D);
+        Assert.Equal(2, sut.State.PC);
     }
 
     [Fact]
     public void Emulate8080Op_WhenMVIE_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0x1E, 0x01],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0x1E, 0x01], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.E);
-        Assert.Equal(2, state.PC);
+        Assert.Equal(0x01, sut.State.E);
+        Assert.Equal(2, sut.State.PC);
     }
 
     [Fact]
     public void Emulate8080Op_WhenMVIH_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0x26, 0x01],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0x26, 0x01], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.H);
-        Assert.Equal(2, state.PC);
+        Assert.Equal(0x01, sut.State.H);
+        Assert.Equal(2, sut.State.PC);
     }
 
     [Fact]
     public void Emulate8080Op_WhenMVIL_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0x2E, 0x01],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0x2E, 0x01], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.L);
-        Assert.Equal(2, state.PC);
+        Assert.Equal(0x01, sut.State.L);
+        Assert.Equal(2, sut.State.PC);
     }
 
     [Fact]
@@ -374,40 +336,34 @@ public partial class HelperTests
         data[1] = 0x01;
         data[258] = 0x00;
         // Arrange
-        State8080 state = new()
-        {
-            Memory = data,
-            PC = 0,
-            H = 1,
-            L = 2
-        };
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.H = 1;
+        sut.State.L = 2;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.Memory[258]);
-        Assert.Equal(2, state.PC);
+        Assert.Equal(0x01, sut.Memory[258]);
+        Assert.Equal(2, sut.State.PC);
     }
 
     [Fact]
     public void Emulate8080Op_WhenMVIA_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0x3E, 0x01],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0x3E, 0x01], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.A);
-        Assert.Equal(2, state.PC);
+        Assert.Equal(0x01, sut.State.A);
+        Assert.Equal(2, sut.State.PC);
     }
 
     [Theory]
@@ -416,10 +372,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(3, read);
@@ -430,79 +388,67 @@ public partial class HelperTests
     public void Emulate8080Op_WhenLXIB_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0x01, 0x01, 0x02],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0x01, 0x01, 0x02], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.C);
-        Assert.Equal(0x02, state.B);
-        Assert.Equal(3, state.PC);
+        Assert.Equal(0x01, sut.State.C);
+        Assert.Equal(0x02, sut.State.B);
+        Assert.Equal(3, sut.State.PC);
     }
 
     [Fact]
     public void Emulate8080Op_WhenLXID_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0x11, 0x01, 0x02],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0x11, 0x01, 0x02], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.E);
-        Assert.Equal(0x02, state.D);
-        Assert.Equal(3, state.PC);
+        Assert.Equal(0x01, sut.State.E);
+        Assert.Equal(0x02, sut.State.D);
+        Assert.Equal(3, sut.State.PC);
     }
 
     [Fact]
     public void Emulate8080Op_WhenLXIH_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0x21, 0x01, 0x02],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0x21, 0x01, 0x02], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.L);
-        Assert.Equal(0x02, state.H);
-        Assert.Equal(3, state.PC);
+        Assert.Equal(0x01, sut.State.L);
+        Assert.Equal(0x02, sut.State.H);
+        Assert.Equal(3, sut.State.PC);
     }
 
     [Fact]
     public void Emulate8080Op_WhenLXISP_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0x31, 0x01, 0x02],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0x31, 0x01, 0x02], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x0201, state.SP);
-        Assert.Equal(3, state.PC);
+        Assert.Equal(0x0201, sut.State.SP);
+        Assert.Equal(3, sut.State.PC);
     }
 
     [Fact]
@@ -510,10 +456,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init([0x3A, 0x01, 0x02], 0);
 
         // Act
-        int read = Helper.Disassemble8080Op([0x3A, 0x01, 0x02], 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(3, read);
@@ -525,10 +473,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init([0x32, 0x01, 0x02], 0);
 
         // Act
-        int read = Helper.Disassemble8080Op([0x32, 0x01, 0x02], 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(3, read);
@@ -540,10 +490,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init([0x2A, 0x01, 0x02], 0);
 
         // Act
-        int read = Helper.Disassemble8080Op([0x2A, 0x01, 0x02], 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(3, read);
@@ -555,10 +507,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init([0x22, 0x01, 0x02], 0);
 
         // Act
-        int read = Helper.Disassemble8080Op([0x22, 0x01, 0x02], 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(3, read);
@@ -571,10 +525,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
@@ -586,21 +542,18 @@ public partial class HelperTests
     public void Emulate8080Op_WhenLDAXB_ShouldSucceed(byte[] data, byte memoryLocationLow, byte memoryLocationHigh, byte expectedValue)
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = data,
-            PC = 0,
-            C = memoryLocationLow,
-            B = memoryLocationHigh
-        };
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.C = memoryLocationLow;
+        sut.State.B = memoryLocationHigh;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(expectedValue, state.A);
-        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedValue, sut.State.A);
+        Assert.Equal(1, sut.State.PC);
     }
 
     [Theory]
@@ -608,21 +561,18 @@ public partial class HelperTests
     public void Emulate8080Op_WhenLDAXD_ShouldSucceed(byte[] data, byte memoryLocationLow, byte memoryLocationHigh, byte expectedValue)
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = data,
-            PC = 0,
-            E = memoryLocationLow,
-            D = memoryLocationHigh
-        };
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.E = memoryLocationLow;
+        sut.State.D = memoryLocationHigh;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(expectedValue, state.A);
-        Assert.Equal(1, state.PC);
+        Assert.Equal(expectedValue, sut.State.A);
+        Assert.Equal(1, sut.State.PC);
     }
 
     [Theory]
@@ -631,10 +581,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
@@ -646,10 +598,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init([0xEB], 0);
 
         // Act
-        int read = Helper.Disassemble8080Op([0xEB], 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
@@ -660,25 +614,22 @@ public partial class HelperTests
     public void Emulate8080Op_WhenXCHG_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0xEB],
-            PC = 0,
-            D = 0x01,
-            E = 0x02,
-            H = 0x03,
-            L = 0x04
-        };
+        CPU8080 sut = new();
+        sut.Init([0xEB], 0);
+        sut.State.D = 0x01;
+        sut.State.E = 0x02;
+        sut.State.H = 0x03;
+        sut.State.L = 0x04;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x01, state.H);
-        Assert.Equal(0x02, state.L);
-        Assert.Equal(0x03, state.D);
-        Assert.Equal(0x04, state.E);
-        Assert.Equal(1, state.PC);
+        Assert.Equal(0x01, sut.State.H);
+        Assert.Equal(0x02, sut.State.L);
+        Assert.Equal(0x03, sut.State.D);
+        Assert.Equal(0x04, sut.State.E);
+        Assert.Equal(1, sut.State.PC);
     }
 }

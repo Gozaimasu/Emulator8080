@@ -1,16 +1,18 @@
 ﻿namespace ConsoleEmulator.Test;
 
-public partial class HelperTests
+public partial class CPU8080Tests
 {
     [Fact]
     public void Disassemble8080Op_WhenJMP_ShouldSucceed()
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init([0xC3, 0x01, 0x02], 0);
 
         // Act
-        int read = Helper.Disassemble8080Op([0xC3, 0x01, 0x02], 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(3, read);
@@ -21,18 +23,15 @@ public partial class HelperTests
     public void Emulate8080Op_WhenJMP_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0xC3, 0x01, 0x02],
-            PC = 0
-        };
+        CPU8080 sut = new();
+        sut.Init([0xC3, 0x01, 0x02], 0);
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x0201, state.PC);
+        Assert.Equal(0x0201, sut.State.PC);
     }
 
     [Theory]
@@ -41,10 +40,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(3, read);
@@ -56,25 +57,22 @@ public partial class HelperTests
     public void Emulate8080Op_WhenJCondition_ShouldSucceed(byte[] data, byte initialZ, byte initialCY, byte initialP, byte initialS, ushort expectedPC)
     {
         // Arrange
-        State8080 state = new()
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.CC = new ConditionCodes
         {
-            Memory = data,
-            PC = 0,
-            CC = new ConditionCodes
-            {
-                Z = initialZ,
-                CY = initialCY,
-                P = initialP,
-                S = initialS
-            }
+            Z = initialZ,
+            CY = initialCY,
+            P = initialP,
+            S = initialS
         };
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(expectedPC, state.PC);
+        Assert.Equal(expectedPC, sut.State.PC);
     }
 
     [Fact]
@@ -82,10 +80,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init([0xCD, 0x01, 0x02], 0);
 
         // Act
-        int read = Helper.Disassemble8080Op([0xCD, 0x01, 0x02], 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(3, read);
@@ -96,22 +96,19 @@ public partial class HelperTests
     public void Emulate8080Op_WhenCALL_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0xCD, 0x01, 0x02, 0x02, 0x01],
-            PC = 0x00,
-            SP = 5
-        };
+        CPU8080 sut = new();
+        sut.Init([0xCD, 0x01, 0x02, 0x02, 0x01], 0);
+        sut.State.SP = 5;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(3, state.SP);
-        Assert.Equal(0x0201, state.PC);
-        Assert.Equal(0x01, state.Memory[3]);
-        Assert.Equal(0x00, state.Memory[4]);
+        Assert.Equal(3, sut.State.SP);
+        Assert.Equal(0x0201, sut.State.PC);
+        Assert.Equal(0x01, sut.Memory[3]);
+        Assert.Equal(0x00, sut.Memory[4]);
     }
 
     [Theory]
@@ -120,10 +117,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(3, read);
@@ -135,10 +134,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init([0xC9], 0);
 
         // Act
-        int read = Helper.Disassemble8080Op([0xC9], 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
@@ -149,20 +150,17 @@ public partial class HelperTests
     public void Emulate8080Op_WhenRET_ShouldSucceed()
     {
         // Arrange
-        State8080 state = new()
-        {
-            Memory = [0xC9, 0x02, 0x01],
-            PC = 0x00,
-            SP = 1
-        };
+        CPU8080 sut = new();
+        sut.Init([0xC9, 0x02, 0x01], 0);
+        sut.State.SP = 1;
 
         // Act
-        int done = Helper.Emulate8080Op(ref state);
+        int done = sut.Step();
 
         // Assert
         Assert.Equal(0, done);
-        Assert.Equal(0x0102, state.PC);
-        Assert.Equal(3, state.SP);
+        Assert.Equal(0x0102, sut.State.PC);
+        Assert.Equal(3, sut.State.SP);
     }
 
     [Theory]
@@ -171,10 +169,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
@@ -187,10 +187,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
 
         // Act
-        int read = Helper.Disassemble8080Op(data, 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
@@ -202,10 +204,12 @@ public partial class HelperTests
     {
         // Arrange
         TestDebugOutput debugOutput = new();
-        Helper.DebugOutput = debugOutput;
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init([0xE9], 0);
 
         // Act
-        int read = Helper.Disassemble8080Op([0xE9], 0);
+        int read = sut.Disassemble8080Op(0);
 
         // Assert
         Assert.Equal(1, read);
