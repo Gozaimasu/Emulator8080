@@ -334,12 +334,8 @@ internal class CPU8080
                 case 0xEB:
                     {
                         // XCHG
-                        byte temp = State.H;
-                        State.H = State.D;
-                        State.D = temp;
-                        temp = State.L;
-                        State.L = State.E;
-                        State.E = temp;
+                        (State.D, State.H) = (State.H, State.D);
+                        (State.E, State.L) = (State.L, State.E);
                         break;
                     }
 
