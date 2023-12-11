@@ -7,7 +7,7 @@ internal class CPU8080
     public State8080 State { get; private set; }
     public static IDebugOutput DebugOutput { get; set; } = null!;
 
-    public byte[] Memory { get; } = [];
+    public byte[] Memory { get; private set; } = [];
 
     public CPU8080()
     {
@@ -21,7 +21,7 @@ internal class CPU8080
 
     public void Init(byte[] memory, ushort start)
     {
-        _memory = memory;
+        Memory = memory;
         State.PC = start;
     }
 
