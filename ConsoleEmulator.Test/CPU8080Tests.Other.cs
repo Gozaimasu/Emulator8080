@@ -1,4 +1,6 @@
-﻿namespace ConsoleEmulator.Test;
+﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace ConsoleEmulator.Test;
 
 public partial class CPU8080Tests
 {
@@ -230,6 +232,23 @@ public partial class CPU8080Tests
         // Assert
         Assert.Equal(2, read);
         Assert.Equal($"0000\tOUT\t#$01{Environment.NewLine}", debugOutput.Output);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenOUT_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        sut.Init([0xD3, 0x01], 0);
+        sut.State.A = 0x02;
+        sut.Output = delegate (byte port, byte data) { Assert.Equal(0x01, port); Assert.Equal(0x02, data); };
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(2, sut.State.PC);
     }
 
     [Fact]
