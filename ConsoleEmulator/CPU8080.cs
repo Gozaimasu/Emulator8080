@@ -4,8 +4,11 @@ namespace ConsoleEmulator;
 
 internal class CPU8080
 {
+    public delegate void OutputCallback(byte port, byte data);
+
     public State8080 State { get; private set; }
     public static IDebugOutput DebugOutput { get; set; } = null!;
+    public OutputCallback? Output { get; set; }
 
     public byte[] Memory { get; private set; } = [];
 
@@ -330,6 +333,14 @@ internal class CPU8080
                         State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]);
                         break;
                     };
+
+                case 0xD3:
+                    {
+                        // OUT port
+                        byte port = Memory.AsSpan()[State.PC++];
+                        Output?.Invoke(port, State.A);
+                        break;
+                    }
 
                 case 0xEB:
                     {
