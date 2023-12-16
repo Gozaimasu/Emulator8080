@@ -9,6 +9,9 @@ internal class CPU8080
     public State8080 State { get; private set; }
     public static IDebugOutput DebugOutput { get; set; } = null!;
     public OutputCallback? Output { get; set; }
+    public int Cycles { get; private set; }
+    public int States { get; private set; }
+    public int Steps { get; private set; }
 
     public byte[] Memory { get; private set; } = [];
 
@@ -34,7 +37,7 @@ internal class CPU8080
 
         // Pour debugger
         DebugOutput.WriteLine(string.Format("A={0:X2}, BC={1:X2}{2:X2}, DE={3:X2}{4:X2}, HL={5:X2}{6:X2}, PC={8:X4}, SP={7:X4}", State.A, State.B, State.C, State.D, State.E, State.H, State.L, State.SP, State.PC));
-        DebugOutput.WriteLine(string.Format("Z={0}, S={1}, P={2}, CY={3}, AC={4}, PAD={5}", State.CC.Z, State.CC.S, State.CC.P, State.CC.CY, State.CC.AC, State.CC.PAD));
+        DebugOutput.WriteLine(string.Format("Z={0}, S={1}, P={2}, CY={3}, AC={4}, PAD={5}, Cycles={6}, States={7}", State.CC.Z, State.CC.S, State.CC.P, State.CC.CY, State.CC.AC, State.CC.PAD, Cycles, States));
         Disassemble8080Op(State.PC);
 
         State.PC++;
@@ -62,6 +65,8 @@ internal class CPU8080
             State.CC = cc;
             // Modification du registre
             State.SetRegister(offset, (byte)(0xFF & res));
+            Cycles++;
+            States += 5;
         }
         // MVI
         else if ((opcode & 0xC7) == 0x06)
@@ -71,12 +76,15 @@ internal class CPU8080
 
             if (offset == 6)
             {
-                // DCR M
                 Memory.AsSpan()[(State.H << 8) + State.L] = Memory.AsSpan()[State.PC];
+                Cycles += 3;
+                States += 10;
             }
             else
             {
                 State.SetRegister(offset, Memory.AsSpan()[State.PC]);
+                Cycles += 2;
+                States += 7;
             }
 
             State.PC++;
@@ -178,6 +186,8 @@ internal class CPU8080
                     }
                     break;
             }
+            Cycles += 3;
+            States += 10;
         }
         // LXI
         else if ((opcode & 0xCF) == 0x01)
@@ -191,6 +201,8 @@ internal class CPU8080
                 case 3: { State.SP = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]); break; } // LXI SP,D16
             }
             State.PC += 2;
+            Cycles += 3;
+            States += 10;
         }
         // INX
         else if ((opcode & 0xCF) == 0x03)
@@ -201,8 +213,10 @@ internal class CPU8080
                 case 0: { if (State.C == 0xFF) { State.C = 0; State.B++; } else { State.C++; } break; } // INX B
                 case 1: { if (State.E == 0xFF) { State.E = 0; State.D++; } else { State.E++; } break; } // INX D
                 case 2: { if (State.L == 0xFF) { State.L = 0; State.H++; } else { State.L++; } break; } // INX H
-                case 3: { State.SP++; break; } // LXI SP,D16
+                case 3: { State.SP++; break; } // INX SP
             }
+            Cycles++;
+            States += 5;
         }
         // DAD
         else if ((opcode & 0xCF) == 0x09)
@@ -225,6 +239,8 @@ internal class CPU8080
                 cc.CY = 1;
             }
             State.CC = cc;
+            Cycles += 3;
+            States += 10;
         }
         // LDAX
         else if ((opcode & 0xCF) == 0x0A)
@@ -236,6 +252,8 @@ internal class CPU8080
                 case 1: { State.A = Memory.AsSpan()[(State.D << 8) + State.E]; break; } // LDAX D
                 default: return UnimplementedInstruction();
             }
+            Cycles += 2;
+            States += 7;
         }
         // POP
         else if ((opcode & 0xCF) == 0xC1)
@@ -249,6 +267,8 @@ internal class CPU8080
                 default: return UnimplementedInstruction();
             }
             State.SP += 2;
+            Cycles += 3;
+            States += 10;
         }
         // PUSH
         else if ((opcode & 0xCF) == 0xC5)
@@ -262,6 +282,8 @@ internal class CPU8080
                 default: return UnimplementedInstruction();
             }
             State.SP -= 2;
+            Cycles += 3;
+            States += 10;
         }
         // MOV
         else if ((opcode & 0xC0) == 0x40)
@@ -279,79 +301,85 @@ internal class CPU8080
             {
                 // MOV M, r
                 Memory.AsSpan()[(State.H << 8) + State.L] = State.GetRegister(offsetSource);
+                Cycles += 2;
+                States += 7;
             }
             else
             {
                 State.SetRegister(offsetDestination, State.GetRegister(offsetSource));
+                Cycles++;
+                States += 5;
             }
         }
         else
         {
             switch (opcode)
             {
-                case 0x00: { break; } // NOP
+                // NOP
+                case 0x00: { Cycles++; States += 4; break; }
 
+                // ANI data
                 case 0xE6:
                     {
-                        // ANI data
                         State.A &= Memory.AsSpan()[State.PC++];
+                        Cycles += 2;
+                        States += 7;
                         break;
                     }
 
-                case 0xC2:
-                    {
-                        // JNZ adr
-                        if (State.CC.Z != 1)
-                        {
-                            State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]);
-                        }
-                        else
-                        {
-                            State.PC += 2;
-                        }
-                        break;
-                    }
+                // JMP
                 case 0xC3:
                     {
                         State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]);
+                        Cycles += 3;
+                        States += 10;
                         break;
                     }
 
+                // RET
                 case 0xC9:
                     {
-                        // RET
                         State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.SP]);
                         State.SP += 2;
+                        Cycles += 3;
+                        States += 10;
                         break;
                     }
 
+                // CALL
                 case 0xCD:
                     {
                         Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.SP - 2]) = (ushort)(State.PC + 2);
                         State.SP -= 2;
                         State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]);
+                        Cycles += 5;
+                        States += 17;
                         break;
                     };
 
+                // OUT port
                 case 0xD3:
                     {
-                        // OUT port
                         byte port = Memory.AsSpan()[State.PC++];
                         Output?.Invoke(port, State.A);
+                        Cycles += 3;
+                        States += 10;
                         break;
                     }
 
+                // XCHG
                 case 0xEB:
                     {
-                        // XCHG
                         (State.D, State.H) = (State.H, State.D);
                         (State.E, State.L) = (State.L, State.E);
+                        Cycles++;
+                        States += 4;
                         break;
                     }
 
+                // CPI
                 case 0xFE:
                     {
-                        // CPI
                         byte value = Memory.AsSpan()[State.PC++];
                         int result = State.A - value;
                         ConditionCodes cc = State.CC;
@@ -362,12 +390,17 @@ internal class CPU8080
                         cc.CY = State.A < value ? (byte)1 : (byte)0;
                         // Affectation de la nouvelle valeur de CC
                         State.CC = cc;
+                        Cycles += 2;
+                        States += 7;
                         break;
                     }
 
                 default: { return UnimplementedInstruction(); }
             }
         }
+
+        Steps++;
+
         return 0;
     }
 
@@ -640,7 +673,7 @@ internal class CPU8080
         return opbytes;
     }
 
-    private  int UnimplementedInstruction()
+    private int UnimplementedInstruction()
     {
         State.PC--;
         DebugOutput.WriteLine(string.Format("Error: Unimplemented instruction : {0:X2}", Memory.AsSpan()[State.PC]));
