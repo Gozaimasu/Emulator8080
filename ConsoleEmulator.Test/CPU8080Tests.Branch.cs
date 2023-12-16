@@ -107,7 +107,7 @@ public partial class CPU8080Tests
         Assert.Equal(0, done);
         Assert.Equal(3, sut.State.SP);
         Assert.Equal(0x0201, sut.State.PC);
-        Assert.Equal(0x01, sut.Memory[3]);
+        Assert.Equal(0x03, sut.Memory[3]);
         Assert.Equal(0x00, sut.Memory[4]);
     }
 

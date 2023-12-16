@@ -327,8 +327,7 @@ internal class CPU8080
 
                 case 0xCD:
                     {
-                        // CALL
-                        Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.SP - 2]) = State.PC;
+                        Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.SP - 2]) = (ushort)(State.PC + 2);
                         State.SP -= 2;
                         State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]);
                         break;
