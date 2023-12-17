@@ -195,4 +195,33 @@ internal class EmulateTestData
         yield return new object[] { 0xA2, 0x01, 0x51, 0x00 };
         yield return new object[] { 0x51, 0x00, 0xA8, 0x01 };
     }
+
+    public static IEnumerable<object[]> GetADIData()
+    {
+        yield return new object[] { new byte[] { 0xC6, 0x01},
+            0x01 /* initialA */,
+            new ConditionCodes() { Z = 1, S = 1, P = 0, CY = 1} /* initialCC */,
+            0x02 /* expectedA */,
+            new ConditionCodes() { Z = 0, S = 0, P = 1, CY = 0} /* expectedCC */};
+        yield return new object[] { new byte[] { 0xC6, 0x02},
+            0x01 /* initialA */,
+            new ConditionCodes() { Z = 1, S = 1, P = 1, CY = 1} /* initialCC */,
+            0x03 /* expectedA */,
+            new ConditionCodes() { Z = 0, S = 0, P = 0, CY = 0} /* expectedCC */};
+        yield return new object[] { new byte[] { 0xC6, 0x01},
+            0x0F /* initialA */,
+            new ConditionCodes() { Z = 1, S = 1, P = 0, CY = 1} /* initialCC */,
+            0x10 /* expectedA */,
+            new ConditionCodes() { Z = 0, S = 0, P = 1, CY = 0} /* expectedCC */};
+        yield return new object[] { new byte[] { 0xC6, 0x01},
+            0xFE /* initialA */,
+            new ConditionCodes() { Z = 1, S = 0, P = 1, CY = 1} /* initialCC */,
+            0xFF /* expectedA */,
+            new ConditionCodes() { Z = 0, S = 1, P = 0, CY = 0} /* expectedCC */};
+        yield return new object[] { new byte[] { 0xC6, 0x01},
+            0xFF /* initialA */,
+            new ConditionCodes() { Z = 0, S = 1, P = 0, CY = 0} /* initialCC */,
+            0x00 /* expectedA */,
+            new ConditionCodes() { Z = 1, S = 0, P = 1, CY = 1} /* expectedCC */};
+    }
 }
