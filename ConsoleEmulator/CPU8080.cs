@@ -355,6 +355,25 @@ internal class CPU8080
                         break;
                     }
 
+                // ADI data
+                case 0xC6:
+                    {
+                        byte value = Memory.AsSpan()[State.PC++];
+                        int result = State.A + value;
+                        State.A = (byte)(result & 0xFF);
+                        ConditionCodes cc = State.CC;
+                        // Modification de CC
+                        cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+                        cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
+                        cc.P = (byte)(result ^ (result | 1));
+                        cc.CY = result > 0xFF ? (byte)1 : (byte)0;
+                        // Affectation de la nouvelle valeur de CC
+                        State.CC = cc;
+                        Cycles += 2;
+                        States += 7;
+                        break;
+                    }
+
                 // ANI data
                 case 0xE6:
                     {
