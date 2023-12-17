@@ -198,6 +198,32 @@ public partial class CPU8080Tests
     }
 
     [Fact]
+    public void Emulate8080Op_WhenPOPPSW_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        sut.Init([0xF1, 0xD7, 0xFF], 0);
+        sut.State.A = 0x00;
+        sut.State.SP = 1;
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(0xFF, sut.State.A);
+        Assert.Equal(0x01, sut.State.CC.S);
+        Assert.Equal(0x01, sut.State.CC.Z);
+        Assert.Equal(0x01, sut.State.CC.AC);
+        Assert.Equal(0x01, sut.State.CC.P);
+        Assert.Equal(0x01, sut.State.CC.CY);
+        Assert.Equal(3, sut.State.SP);
+        Assert.Equal(3, sut.Cycles);
+        Assert.Equal(10, sut.States);
+    }
+
+    [Fact]
     public void Disassemble8080Op_WhenXTHL_ShouldSucceed()
     {
         // Arrange
