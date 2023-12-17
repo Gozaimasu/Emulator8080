@@ -190,6 +190,172 @@ public partial class CPU8080Tests
         Assert.Equal(1, sut.State.PC);
     }
 
+    [Fact]
+    public void Emulate8080Op_WhenMOVBM_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        byte[] data = new byte[259];
+        data[0] = 0x46;
+        data[258] = 0xFF;
+        sut.Init(data, 0);
+        sut.State.B = 0x00;
+        sut.State.H = 0x01;
+        sut.State.L = 0x02;
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0xFF, sut.State.B);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(2, sut.Cycles);
+        Assert.Equal(7, sut.States);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenMOVCM_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        byte[] data = new byte[259];
+        data[0] = 0x4E;
+        data[258] = 0xFF;
+        sut.Init(data, 0);
+        sut.State.C = 0x00;
+        sut.State.H = 0x01;
+        sut.State.L = 0x02;
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0xFF, sut.State.C);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(2, sut.Cycles);
+        Assert.Equal(7, sut.States);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenMOVDM_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        byte[] data = new byte[259];
+        data[0] = 0x56;
+        data[258] = 0xFF;
+        sut.Init(data, 0);
+        sut.State.D = 0x00;
+        sut.State.H = 0x01;
+        sut.State.L = 0x02;
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0xFF, sut.State.D);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(2, sut.Cycles);
+        Assert.Equal(7, sut.States);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenMOVEM_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        byte[] data = new byte[259];
+        data[0] = 0x5E;
+        data[258] = 0xFF;
+        sut.Init(data, 0);
+        sut.State.E = 0x00;
+        sut.State.H = 0x01;
+        sut.State.L = 0x02;
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0xFF, sut.State.E);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(2, sut.Cycles);
+        Assert.Equal(7, sut.States);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenMOVHM_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        byte[] data = new byte[259];
+        data[0] = 0x66;
+        data[258] = 0xFF;
+        sut.Init(data, 0);
+        sut.State.H = 0x01;
+        sut.State.L = 0x02;
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0xFF, sut.State.H);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(2, sut.Cycles);
+        Assert.Equal(7, sut.States);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenMOVLM_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        byte[] data = new byte[259];
+        data[0] = 0x6E;
+        data[258] = 0xFF;
+        sut.Init(data, 0);
+        sut.State.H = 0x01;
+        sut.State.L = 0x02;
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0xFF, sut.State.L);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(2, sut.Cycles);
+        Assert.Equal(7, sut.States);
+    }
+
+    [Fact]
+    public void Emulate8080Op_WhenMOVAM_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        byte[] data = new byte[259];
+        data[0] = 0x7E;
+        data[258] = 0xFF;
+        sut.Init(data, 0);
+        sut.State.A = 0x00;
+        sut.State.H = 0x01;
+        sut.State.L = 0x02;
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0xFF, sut.State.A);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(2, sut.Cycles);
+        Assert.Equal(7, sut.States);
+    }
+
     [Theory]
     [MemberData(nameof(EmulateTestData.GetMOVAData), MemberType = typeof(EmulateTestData))]
     public void Emulate8080Op_WhenMOVA_ShouldSucceed(byte[] data, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte initialA, byte expectedValue)
