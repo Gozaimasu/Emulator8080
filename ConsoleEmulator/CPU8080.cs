@@ -264,7 +264,19 @@ internal class CPU8080
                 case 0: { State.C = Memory.AsSpan()[State.SP]; State.B = Memory.AsSpan()[State.SP + 1]; break; } // POP B
                 case 1: { State.E = Memory.AsSpan()[State.SP]; State.D = Memory.AsSpan()[State.SP + 1]; break; } // POP D
                 case 2: { State.L = Memory.AsSpan()[State.SP]; State.H = Memory.AsSpan()[State.SP + 1]; break; } // POP H
-                default: return UnimplementedInstruction();
+                default:
+                    {
+                        State.A = Memory.AsSpan()[State.SP + 1];
+                        var cc = State.CC;
+                        byte psw = Memory.AsSpan()[State.SP];
+                        cc.CY = (byte)(psw & 0x01);
+                        cc.P = (byte)((psw >> 2) & 0x01);
+                        cc.AC = (byte)((psw >> 4) & 0x01);
+                        cc.Z = (byte)((psw >> 6) & 0x01);
+                        cc.S = (byte)((psw >> 7) & 0x01);
+                        State.CC = cc;
+                        break;
+                    }
             }
             State.SP += 2;
             Cycles += 3;
