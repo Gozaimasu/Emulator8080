@@ -362,6 +362,15 @@ internal class CPU8080
                         States += 4;
                         break;
                     }
+                // STA
+                case 0x32:
+                    {
+                        int addr = Memory.AsSpan()[State.PC++] + (Memory.AsSpan()[State.PC++] << 8);
+                        Memory.AsSpan()[addr] = State.A;
+                        Cycles += 4;
+                        States += 13;
+                        break;
+                    }
 
                 // ADI data
                 case 0xC6:
