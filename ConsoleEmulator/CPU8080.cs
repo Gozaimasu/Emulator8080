@@ -343,6 +343,18 @@ internal class CPU8080
                 // NOP
                 case 0x00: { Cycles++; States += 4; break; }
 
+                // RRC
+                case 0x0F:
+                    {
+                        var cc = State.CC;
+                        cc.CY = (byte)(State.A & 0x01);
+                        State.CC = cc;
+                        State.A = (byte)((State.A >> 1) | (State.A << 7));
+                        Cycles++;
+                        States += 4;
+                        break;
+                    }
+
                 // ANI data
                 case 0xE6:
                     {
