@@ -222,6 +222,32 @@ public partial class CPU8080Tests
         Assert.Equal($"0000\tRRC{Environment.NewLine}", debugOutput.Output);
     }
 
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetRRCData), MemberType = typeof(EmulateTestData))]
+    public void Emulate8080Op_WhenRRC_ShouldSucceed(byte initialA, byte initialCY, byte expectedA, byte expectedCY)
+    {
+        // Arrange
+        TestDebugOutput debugOutput = new();
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init([0x0F], 0);
+        sut.State.A = initialA;
+        sut.State.CC = new()
+        {
+            CY = initialCY
+        };
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedA, sut.State.A);
+        Assert.Equal(expectedCY, sut.State.CC.CY);
+        Assert.Equal(1, sut.Cycles);
+        Assert.Equal(4, sut.States);
+    }
+
     [Fact]
     public void Disassemble8080Op_WhenRAL_ShouldSucceed()
     {
