@@ -292,12 +292,20 @@ internal class CPU8080
             int offsetDestination = (opcode >> 3) & 0x07;
             int offsetSource = opcode & 0x07;
 
-            if (offsetSource == 6)
+
+            if (offsetSource == 6 && offsetDestination == 6)
             {
-                // MOV r, M
+                // HLT
                 return UnimplementedInstruction();
             }
-            if (offsetDestination == 6)
+            else if (offsetSource == 6)
+            {
+                // MOV r, M
+                State.SetRegister(offsetDestination, Memory.AsSpan()[(State.H << 8) + State.L]);
+                Cycles += 2;
+                States += 7;
+            }
+            else if (offsetDestination == 6)
             {
                 // MOV M, r
                 Memory.AsSpan()[(State.H << 8) + State.L] = State.GetRegister(offsetSource);
