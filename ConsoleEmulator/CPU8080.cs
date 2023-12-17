@@ -250,6 +250,14 @@ internal class CPU8080
             {
                 case 0: { State.A = Memory.AsSpan()[(State.B << 8) + State.C]; break; } // LDAX B
                 case 1: { State.A = Memory.AsSpan()[(State.D << 8) + State.E]; break; } // LDAX D
+                case 3:
+                    {
+                        int addr = Memory.AsSpan()[State.PC++] + (Memory.AsSpan()[State.PC++] << 8);
+                        State.A = Memory.AsSpan()[addr];
+                        Cycles += 2;
+                        States += 6;
+                        break;
+                    }
                 default: return UnimplementedInstruction();
             }
             Cycles += 2;
