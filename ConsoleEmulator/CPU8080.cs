@@ -279,11 +279,16 @@ internal class CPU8080
                 case 0: { Memory.AsSpan()[State.SP - 2] = State.C; Memory.AsSpan()[State.SP - 1] = State.B; break; } // PUSH B
                 case 1: { Memory.AsSpan()[State.SP - 2] = State.E; Memory.AsSpan()[State.SP - 1] = State.D; break; } // PUSH D
                 case 2: { Memory.AsSpan()[State.SP - 2] = State.L; Memory.AsSpan()[State.SP - 1] = State.H; break; } // PUSH H
-                default: return UnimplementedInstruction();
+                default:
+                    {
+                        Memory.AsSpan()[State.SP - 2] = (byte)((State.CC.S << 7) + (State.CC.Z << 6) + (State.CC.AC << 4) + (State.CC.P << 2) + 2 + State.CC.CY);
+                        Memory.AsSpan()[State.SP - 1] = State.A;
+                        break;
+                    }
             }
             State.SP -= 2;
             Cycles += 3;
-            States += 10;
+            States += 11;
         }
         // MOV
         else if ((opcode & 0xC0) == 0x40)
