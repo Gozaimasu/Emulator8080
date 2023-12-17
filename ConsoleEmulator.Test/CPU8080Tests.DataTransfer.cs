@@ -677,6 +677,31 @@ public partial class CPU8080Tests
     }
 
     [Fact]
+    public void Step_WhenSTA_ShouldSucceed()
+    {
+        // Arrange
+        TestDebugOutput debugOutput = new();
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.State.A = 0x01;
+        byte[] data = new byte[259];
+        data[0] = 0x32;
+        data[1] = 0x02;
+        data[2] = 0x01;
+        data[0x0102] = 0xFF;
+        sut.Init(data, 0);
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(4, sut.Cycles);
+        Assert.Equal(13, sut.States);
+        Assert.Equal(0x01, sut.Memory[0x0102]);
+    }
+
+    [Fact]
     public void Disassemble8080Op_WhenLHLD_ShouldSucceed()
     {
         // Arrange
