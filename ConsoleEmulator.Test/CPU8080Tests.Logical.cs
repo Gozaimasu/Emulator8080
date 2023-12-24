@@ -72,6 +72,70 @@ public partial class CPU8080Tests
         Assert.Equal(expectedOutput, debugOutput.Output);
     }
 
+    [Theory]
+    [MemberData(nameof(EmulateTestData.GetXRARData), MemberType = typeof(EmulateTestData))]
+    public void Step_WhenXRAR_ShouldSucceed(byte[] data, byte initialA, byte initialB, byte initialC, byte initialD, byte initialE, byte initialH, byte initialL, byte expectedA)
+    {
+        // Arrange
+        CPU8080 sut = new();
+        sut.State.A = initialA;
+        sut.State.B = initialB;
+        sut.State.C = initialC;
+        sut.State.D = initialD;
+        sut.State.E = initialE;
+        sut.State.H = initialH;
+        sut.State.L = initialL;
+        sut.State.CC = new()
+        {
+            CY = 0x01,
+            AC = 0x01
+        };
+        sut.Init(data, 0);
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(expectedA, sut.State.A);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(0, sut.State.CC.CY);
+        Assert.Equal(0, sut.State.CC.AC);
+        Assert.Equal(1, sut.Cycles);
+        Assert.Equal(4, sut.States);
+    }
+
+    [Fact]
+    public void Step_WhenXRAM_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        sut.State.A = 0xAF;
+        sut.State.H = 0x01;
+        sut.State.L = 0x02;
+        sut.State.CC = new()
+        {
+            CY = 0x01,
+            AC = 0x01
+        };
+        byte[] data = new byte[259];
+        data[0] = 0xAE;
+        data[258] = 0x55;
+        sut.Init(data, 0);
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(0xFA, sut.State.A);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(0, sut.State.CC.CY);
+        Assert.Equal(0, sut.State.CC.AC);
+        Assert.Equal(2, sut.Cycles);
+        Assert.Equal(7, sut.States);
+    }
+
     [Fact]
     public void Disassemble8080Op_WhenXRI_ShouldSucceed()
     {
