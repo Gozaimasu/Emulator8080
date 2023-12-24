@@ -371,6 +371,34 @@ internal class CPU8080
             cc.AC = 0;
             State.CC = cc;
         }
+        // ANA
+        else if ((opcode & 0xF8) == 0xA0)
+        {
+            // Récupération de l'offset
+            int offset = opcode & 0x07;
+
+            if (offset == 0x06)
+            {
+                // XRA M
+                State.A &= Memory.AsSpan()[(State.H << 8) + State.L];
+                Cycles += 2;
+                States += 7;
+            }
+            else
+            {
+                // XRA r
+                State.A &= State.GetRegister(offset);
+                Cycles++;
+                States += 4;
+            }
+            ConditionCodes cc = State.CC;
+            cc.Z = (byte)(State.A == 0 ? 1 : 0);
+            cc.S = (byte)((State.A >> 7) & 0x01);
+            cc.P = (byte)((State.A & 0x01) == 0 ? 1 : 0);
+            cc.CY = 0;
+            cc.AC = 0;
+            State.CC = cc;
+        }
         else
         {
             switch (opcode)
