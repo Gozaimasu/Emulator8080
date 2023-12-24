@@ -473,7 +473,14 @@ internal class CPU8080
                         States += 4;
                         break;
                     }
-
+                // EI
+                case 0xFB:
+                    {
+                        State.IntEnable = 1;
+                        Cycles++;
+                        States += 4;
+                        break;
+                    }
                 // CPI
                 case 0xFE:
                     {
