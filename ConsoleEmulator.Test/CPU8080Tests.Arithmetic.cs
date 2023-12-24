@@ -38,6 +38,32 @@ public partial class CPU8080Tests
     }
 
     [Theory]
+    [MemberData(nameof(EmulateTestData.GetADIData), MemberType = typeof(EmulateTestData))]
+    public void Step_WhenADI_ShouldSucceed(byte[] data, byte initialA, ConditionCodes initialCC, byte expectedA, ConditionCodes expectedCC)
+    {
+        // Arrange
+        TestDebugOutput debugOutput = new();
+        CPU8080.DebugOutput = debugOutput;
+        CPU8080 sut = new();
+        sut.Init(data, 0);
+        sut.State.A = initialA;
+        sut.State.CC = initialCC;
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(2, sut.Cycles);
+        Assert.Equal(7, sut.States);
+        Assert.Equal(expectedA, sut.State.A);
+        Assert.Equal(expectedCC.Z, sut.State.CC.Z);
+        Assert.Equal(expectedCC.S, sut.State.CC.S);
+        Assert.Equal(expectedCC.P, sut.State.CC.P);
+        Assert.Equal(expectedCC.CY, sut.State.CC.CY);
+    }
+
+    [Theory]
     [MemberData(nameof(DisassembleTestData.GetADCData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenADC_ShouldSucceed(byte[] data, string expectedOutput)
     {

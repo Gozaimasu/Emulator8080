@@ -189,4 +189,61 @@ internal class EmulateTestData
         yield return new object[] { new byte[1] { 0x29 }, 0x00, 0x01, 0x00, 0x01, 0xFF, 0xFF, 0x0001, 0xFF, 0xFE, 0x00, 0x01 };
         yield return new object[] { new byte[1] { 0x39 }, 0x00, 0x01, 0x00, 0x01, 0xFF, 0xFF, 0x0001, 0x00, 0x00, 0x00, 0x01 };
     }
+
+    public static IEnumerable<object[]> GetRRCData()
+    {
+        yield return new object[] { 0xA2, 0x01, 0x51, 0x00 };
+        yield return new object[] { 0x51, 0x00, 0xA8, 0x01 };
+    }
+
+    public static IEnumerable<object[]> GetADIData()
+    {
+        yield return new object[] { new byte[] { 0xC6, 0x01},
+            0x01 /* initialA */,
+            new ConditionCodes() { Z = 1, S = 1, P = 0, CY = 1} /* initialCC */,
+            0x02 /* expectedA */,
+            new ConditionCodes() { Z = 0, S = 0, P = 1, CY = 0} /* expectedCC */};
+        yield return new object[] { new byte[] { 0xC6, 0x02},
+            0x01 /* initialA */,
+            new ConditionCodes() { Z = 1, S = 1, P = 1, CY = 1} /* initialCC */,
+            0x03 /* expectedA */,
+            new ConditionCodes() { Z = 0, S = 0, P = 0, CY = 0} /* expectedCC */};
+        yield return new object[] { new byte[] { 0xC6, 0x01},
+            0x0F /* initialA */,
+            new ConditionCodes() { Z = 1, S = 1, P = 0, CY = 1} /* initialCC */,
+            0x10 /* expectedA */,
+            new ConditionCodes() { Z = 0, S = 0, P = 1, CY = 0} /* expectedCC */};
+        yield return new object[] { new byte[] { 0xC6, 0x01},
+            0xFE /* initialA */,
+            new ConditionCodes() { Z = 1, S = 0, P = 1, CY = 1} /* initialCC */,
+            0xFF /* expectedA */,
+            new ConditionCodes() { Z = 0, S = 1, P = 0, CY = 0} /* expectedCC */};
+        yield return new object[] { new byte[] { 0xC6, 0x01},
+            0xFF /* initialA */,
+            new ConditionCodes() { Z = 0, S = 1, P = 0, CY = 0} /* initialCC */,
+            0x00 /* expectedA */,
+            new ConditionCodes() { Z = 1, S = 0, P = 1, CY = 1} /* expectedCC */};
+    }
+
+    public static IEnumerable<object[]> GetXRARData()
+    {
+        yield return new object[] { new byte[] { 0xA8},  0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xFA };
+        yield return new object[] { new byte[] { 0xA9 }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xFA };
+        yield return new object[] { new byte[] { 0xAA }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xFA };
+        yield return new object[] { new byte[] { 0xAB }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xFA };
+        yield return new object[] { new byte[] { 0xAC }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xFA };
+        yield return new object[] { new byte[] { 0xAD }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xFA };
+        yield return new object[] { new byte[] { 0xAF }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x00 };
+    }
+
+    public static IEnumerable<object[]> GetANARData()
+    {
+        yield return new object[] { new byte[] { 0xA0 }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05 };
+        yield return new object[] { new byte[] { 0xA1 }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05 };
+        yield return new object[] { new byte[] { 0xA2 }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05 };
+        yield return new object[] { new byte[] { 0xA3 }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05 };
+        yield return new object[] { new byte[] { 0xA4 }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05 };
+        yield return new object[] { new byte[] { 0xA5 }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05 };
+        yield return new object[] { new byte[] { 0xA7 }, 0xAF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xAF };
+    }
 }

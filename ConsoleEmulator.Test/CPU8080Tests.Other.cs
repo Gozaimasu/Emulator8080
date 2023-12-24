@@ -83,6 +83,37 @@ public partial class CPU8080Tests
         Assert.Equal(1, sut.State.SP);
     }
 
+    [Fact]
+    public void Emulate8080Op_WhenPUSHPSW_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        sut.Init([0xF5, 0x00, 0x00], 0);
+        sut.State.A = 0xFF;
+        sut.State.SP = 3;
+        sut.State.CC = new ConditionCodes
+        {
+            Z = 0x01,
+            S = 0x01,
+            P = 0x01,
+            CY = 0x01,
+            AC = 0x01,
+            PAD = 0x01
+        };
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(0xD7, sut.Memory[1]);
+        Assert.Equal(0xFF, sut.Memory[2]);
+        Assert.Equal(1, sut.State.SP);
+        Assert.Equal(3, sut.Cycles);
+        Assert.Equal(11, sut.States);
+    }
+
     [Theory]
     [MemberData(nameof(DisassembleTestData.GetPOPData), MemberType = typeof(DisassembleTestData))]
     public void Disassemble8080Op_WhenPOP_ShouldSucceed(byte[] data, string expectedOutput)
@@ -165,6 +196,32 @@ public partial class CPU8080Tests
     }
 
     [Fact]
+    public void Emulate8080Op_WhenPOPPSW_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        sut.Init([0xF1, 0xD7, 0xFF], 0);
+        sut.State.A = 0x00;
+        sut.State.SP = 1;
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(0xFF, sut.State.A);
+        Assert.Equal(0x01, sut.State.CC.S);
+        Assert.Equal(0x01, sut.State.CC.Z);
+        Assert.Equal(0x01, sut.State.CC.AC);
+        Assert.Equal(0x01, sut.State.CC.P);
+        Assert.Equal(0x01, sut.State.CC.CY);
+        Assert.Equal(3, sut.State.SP);
+        Assert.Equal(3, sut.Cycles);
+        Assert.Equal(10, sut.States);
+    }
+
+    [Fact]
     public void Disassemble8080Op_WhenXTHL_ShouldSucceed()
     {
         // Arrange
@@ -233,6 +290,23 @@ public partial class CPU8080Tests
     }
 
     [Fact]
+    public void Emulate8080Op_WhenOUT_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        sut.Init([0xD3, 0x01], 0);
+        sut.State.A = 0x02;
+        sut.Output = delegate (byte port, byte data) { Assert.Equal(0x01, port); Assert.Equal(0x02, data); };
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(2, sut.State.PC);
+    }
+
+    [Fact]
     public void Disassemble8080Op_WhenEI_ShouldSucceed()
     {
         // Arrange
@@ -247,6 +321,24 @@ public partial class CPU8080Tests
         // Assert
         Assert.Equal(1, read);
         Assert.Equal($"0000\tEI{Environment.NewLine}", debugOutput.Output);
+    }
+
+    [Fact]
+    public void Step_WhenEI_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        sut.Init([0xFB], 0);
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(1, sut.Cycles);
+        Assert.Equal(4, sut.States);
+        Assert.Equal(1, sut.State.IntEnable);
     }
 
     [Fact]

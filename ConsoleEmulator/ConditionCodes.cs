@@ -3,7 +3,7 @@
 namespace ConsoleEmulator;
 
 [StructLayout(LayoutKind.Explicit, Size = 8)]
-internal struct ConditionCodes
+public struct ConditionCodes
 {
     [FieldOffset(0)]
     public byte Z;
