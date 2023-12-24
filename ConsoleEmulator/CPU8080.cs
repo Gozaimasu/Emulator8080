@@ -317,7 +317,6 @@ internal class CPU8080
             int offsetDestination = (opcode >> 3) & 0x07;
             int offsetSource = opcode & 0x07;
 
-
             if (offsetSource == 6 && offsetDestination == 6)
             {
                 // HLT
@@ -343,6 +342,31 @@ internal class CPU8080
                 Cycles++;
                 States += 5;
             }
+        }
+        // XRA
+        else if ((opcode & 0xF8) == 0xA8)
+        {
+            // Récupération de l'offset
+            int offset = opcode & 0x07;
+
+            if (offset == 0x06)
+            {
+                // XRA M
+                State.A ^= Memory.AsSpan()[(State.H << 8) + State.L];
+                Cycles += 2;
+                States += 7;
+            }
+            else
+            {
+                // XRA r
+                State.A ^= State.GetRegister(offset);
+                Cycles++;
+                States += 4;
+            }
+            ConditionCodes cc = State.CC;
+            cc.CY = 0;
+            cc.AC = 0;
+            State.CC = cc;
         }
         else
         {
