@@ -364,6 +364,9 @@ internal class CPU8080
                 States += 4;
             }
             ConditionCodes cc = State.CC;
+            cc.Z = (byte)(State.A == 0 ? 1 : 0);
+            cc.S = (byte)((State.A >> 7) & 0x01);
+            cc.P = (byte)((State.A & 0x01) == 0 ? 1 : 0);
             cc.CY = 0;
             cc.AC = 0;
             State.CC = cc;
