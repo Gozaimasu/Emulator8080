@@ -1,6 +1,4 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace ConsoleEmulator.Test;
+﻿namespace ConsoleEmulator.Test;
 
 public partial class CPU8080Tests
 {
@@ -323,6 +321,24 @@ public partial class CPU8080Tests
         // Assert
         Assert.Equal(1, read);
         Assert.Equal($"0000\tEI{Environment.NewLine}", debugOutput.Output);
+    }
+
+    [Fact]
+    public void Step_WhenEI_ShouldSucceed()
+    {
+        // Arrange
+        CPU8080 sut = new();
+        sut.Init([0xFB], 0);
+
+        // Act
+        int done = sut.Step();
+
+        // Assert
+        Assert.Equal(0, done);
+        Assert.Equal(1, sut.State.PC);
+        Assert.Equal(1, sut.Cycles);
+        Assert.Equal(4, sut.States);
+        Assert.Equal(1, sut.State.IntEnable);
     }
 
     [Fact]
