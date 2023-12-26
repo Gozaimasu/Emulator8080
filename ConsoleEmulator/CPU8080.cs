@@ -2,7 +2,7 @@
 
 namespace ConsoleEmulator;
 
-internal class CPU8080
+public class CPU8080
 {
     public delegate void OutputCallback(byte port, byte data);
 

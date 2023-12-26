@@ -1,6 +1,6 @@
 ﻿namespace ConsoleEmulator;
 
-internal interface IDebugOutput
+public interface IDebugOutput
 {
     void WriteLine();
     void WriteLine(string message);

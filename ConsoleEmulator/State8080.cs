@@ -1,6 +1,6 @@
 ﻿namespace ConsoleEmulator;
 
-internal class State8080
+public class State8080
 {
     private readonly byte[] _registers = new byte[8];
 
