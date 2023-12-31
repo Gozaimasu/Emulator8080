@@ -45,9 +45,9 @@ public class CPU8080
         byte opcode = Memory.AsSpan()[State.PC];
 
         // Pour debugger
-        DebugOutput.WriteLine(string.Format("A={0:X2}, BC={1:X2}{2:X2}, DE={3:X2}{4:X2}, HL={5:X2}{6:X2}, PC={8:X4}, SP={7:X4}", State.A, State.B, State.C, State.D, State.E, State.H, State.L, State.SP, State.PC));
-        DebugOutput.WriteLine(string.Format("Z={0}, S={1}, P={2}, CY={3}, AC={4}, PAD={5}, Cycles={6}, States={7}", State.CC.Z, State.CC.S, State.CC.P, State.CC.CY, State.CC.AC, State.CC.PAD, Cycles, States));
-        Disassemble8080Op(State.PC);
+        //DebugOutput.WriteLine(string.Format("A={0:X2}, BC={1:X2}{2:X2}, DE={3:X2}{4:X2}, HL={5:X2}{6:X2}, PC={8:X4}, SP={7:X4}", State.A, State.B, State.C, State.D, State.E, State.H, State.L, State.SP, State.PC));
+        //DebugOutput.WriteLine(string.Format("Z={0}, S={1}, P={2}, CY={3}, AC={4}, PAD={5}, Cycles={6}, States={7}", State.CC.Z, State.CC.S, State.CC.P, State.CC.CY, State.CC.AC, State.CC.PAD, Cycles, States));
+        //Disassemble8080Op(State.PC);
 
         State.PC++;
 
