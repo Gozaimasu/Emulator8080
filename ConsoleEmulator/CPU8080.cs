@@ -69,7 +69,7 @@ public class CPU8080
             // Modification de CC
             cc.Z = res == 0 ? (byte)1 : (byte)0;
             cc.S = (res & 0x80) != 0 ? (byte)1 : (byte)0;
-            cc.P = (byte)(res ^ (res | 1));
+            cc.P = Parity(res, 8);
             // Affectation de la nouvelle valeur de CC
             State.CC = cc;
             // Modification du registre
@@ -375,7 +375,7 @@ public class CPU8080
             ConditionCodes cc = State.CC;
             cc.Z = (byte)(State.A == 0 ? 1 : 0);
             cc.S = (byte)((State.A >> 7) & 0x01);
-            cc.P = (byte)((State.A & 0x01) == 0 ? 1 : 0);
+            cc.P = Parity(State.A, 8);
             cc.CY = 0;
             cc.AC = 0;
             State.CC = cc;
@@ -403,7 +403,7 @@ public class CPU8080
             ConditionCodes cc = State.CC;
             cc.Z = (byte)(State.A == 0 ? 1 : 0);
             cc.S = (byte)((State.A >> 7) & 0x01);
-            cc.P = (byte)((State.A & 0x01) == 0 ? 1 : 0);
+            cc.P = Parity(State.A, 8);
             cc.CY = 0;
             cc.AC = 0;
             State.CC = cc;
@@ -446,7 +446,7 @@ public class CPU8080
                         // Modification de CC
                         cc.Z = State.A == 0 ? (byte)1 : (byte)0;
                         cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
-                        cc.P = (byte)(result ^ (result | 1));
+                        cc.P = Parity(result, 8);
                         cc.CY = result > 0xFF ? (byte)1 : (byte)0;
                         // Affectation de la nouvelle valeur de CC
                         State.CC = cc;
@@ -459,6 +459,15 @@ public class CPU8080
                 case 0xE6:
                     {
                         State.A &= Memory.AsSpan()[State.PC++];
+                        ConditionCodes cc = State.CC;
+                        // Modification de CC
+                        cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+                        cc.S = (State.A & 0x80) != 0 ? (byte)1 : (byte)0;
+                        cc.P = Parity(State.A, 8);
+                        cc.CY = 0x00;
+                        cc.AC = 0x00;
+                        // Affectation de la nouvelle valeur de CC
+                        State.CC = cc;
                         Cycles += 2;
                         States += 7;
                         break;
@@ -493,6 +502,24 @@ public class CPU8080
                         States += 17;
                         break;
                     };
+                // ACI
+                case 0xCE:
+                    {
+                        byte value = Memory.AsSpan()[State.PC++];
+                        int result = State.A + value + State.CC.CY;
+                        State.A = (byte)(result & 0xFF);
+                        ConditionCodes cc = State.CC;
+                        // Modification de CC
+                        cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+                        cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
+                        cc.P = Parity(result, 8);
+                        cc.CY = result > 0xFF ? (byte)1 : (byte)0;
+                        // Affectation de la nouvelle valeur de CC
+                        State.CC = cc;
+                        Cycles += 2;
+                        States += 7;
+                        break;
+                    }
 
                 // OUT port
                 case 0xD3:
@@ -501,6 +528,49 @@ public class CPU8080
                         Output?.Invoke(port, State.A);
                         Cycles += 3;
                         States += 10;
+                        break;
+                    }
+                // SUI
+                case 0xD6:
+                    {
+                        byte value = Memory.AsSpan()[State.PC++];
+                        int result = State.A - value;
+                        State.A = (byte)(result & 0xFF);
+                        ConditionCodes cc = State.CC;
+                        // Modification de CC
+                        cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+                        cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
+                        cc.P = Parity(result, 8);
+                        cc.CY = result > 0xFF ? (byte)1 : (byte)0;
+                        // Affectation de la nouvelle valeur de CC
+                        State.CC = cc;
+                        Cycles += 2;
+                        States += 7;
+                        break;
+                    }
+                // SBI
+                case 0xDE:
+                    {
+                        byte value = Memory.AsSpan()[State.PC++];
+                        ConditionCodes cc = State.CC;
+                        int result = State.A - value - State.CC.CY;
+                        if (State.A < (value + State.CC.CY))
+                        {
+                            cc.CY = 0x01;
+                        }
+                        else
+                        {
+                            cc.CY = 0x00;
+                        }
+                        State.A = (byte)(result & 0xFF);
+                        // Modification de CC
+                        cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+                        cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
+                        cc.P = Parity(result, 8);
+                        // Affectation de la nouvelle valeur de CC
+                        State.CC = cc;
+                        Cycles += 2;
+                        States += 7;
                         break;
                     }
                 // XTHL
@@ -538,7 +608,7 @@ public class CPU8080
                         // Modification de CC
                         cc.Z = result == 0 ? (byte)1 : (byte)0;
                         cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
-                        cc.P = (byte)(result ^ (result | 1));
+                        cc.P = Parity(result, 8);
                         cc.CY = State.A < value ? (byte)1 : (byte)0;
                         // Affectation de la nouvelle valeur de CC
                         State.CC = cc;
@@ -831,5 +901,18 @@ public class CPU8080
         DebugOutput.WriteLine(string.Format("Error: Unimplemented instruction : {0:X2}", Memory.AsSpan()[State.PC]));
         Disassemble8080Op(State.PC);
         return 1;
+    }
+
+    private static byte Parity(int value, int size)
+    {
+        int i;
+        int p = 0;
+        value &= (1 << size) - 1;
+        for (i = 0; i < size; i++)
+        {
+            if ((value & 0x1) == 0) p++;
+            value >>= 1;
+        }
+        return (byte)((0 == (p & 0x1)) ? 0x01 : 0x00);
     }
 }
