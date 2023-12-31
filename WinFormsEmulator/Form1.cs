@@ -64,6 +64,7 @@ public partial class Form1 : Form
             {
                 _cpuTimer.Stop();
                 _screenTimer.Stop();
+                return;
             }
         }
 
@@ -71,7 +72,7 @@ public partial class Form1 : Form
         _cpuTimer.Enabled = true;
     }
 
-    private void loadFileToolStripMenuItem_Click(object sender, EventArgs e)
+    private void LoadFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
         var result = openFileDialog1.ShowDialog();
         if (result != DialogResult.OK)
@@ -84,6 +85,15 @@ public partial class Form1 : Form
             romStream.Read(buffer, 0, buffer.Length);
         }
         _cpu.Init(buffer, 0);
+        _cpu.SystemCall = null;
+
+        _cpuTimer.Start();
+        _screenTimer.Start();
+        _stopwatch.Reset();
+        _lastCpuStep = 0;
+        _stopwatch.Start();
+    }
+
     private void OnCpuDiagnoseClick(object sender, EventArgs e)
     {
         var cpuDiagnosePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
