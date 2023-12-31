@@ -91,4 +91,13 @@ public partial class Form1 : Form
         _lastCpuStep = 0;
         _stopwatch.Start();
     }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {
+        AllocConsole();
+    }
+
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool AllocConsole();
 }
