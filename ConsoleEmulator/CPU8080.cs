@@ -503,7 +503,15 @@ public class CPU8080
                         States += 10;
                         break;
                     }
-
+                // XTHL
+                case 0xE3:
+                    {
+                        (State.L, Memory.AsSpan()[State.SP]) = (Memory.AsSpan()[State.SP], State.L);
+                        (State.H, Memory.AsSpan()[State.SP + 1]) = (Memory.AsSpan()[State.SP + 1], State.H);
+                        Cycles += 5;
+                        States += 18;
+                        break;
+                    }
                 // XCHG
                 case 0xEB:
                     {
