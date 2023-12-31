@@ -84,6 +84,27 @@ public partial class Form1 : Form
             romStream.Read(buffer, 0, buffer.Length);
         }
         _cpu.Init(buffer, 0);
+    private void OnCpuDiagnoseClick(object sender, EventArgs e)
+    {
+        var cpuDiagnosePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        if (cpuDiagnosePath == null)
+        {
+            return;
+        }
+
+        cpuDiagnosePath = Path.Combine(cpuDiagnosePath, "cpudiag.bin");
+        if (!File.Exists(cpuDiagnosePath))
+        {
+            return;
+        }
+
+        byte[] buffer = new byte[0x4000];
+        using (Stream romStream = new FileStream(cpuDiagnosePath, FileMode.Open, FileAccess.Read))
+        {
+            romStream.Read(buffer, 0x0100, 0x3F00);
+        }
+        _cpu.Init(buffer, 0x100);
+        _cpu.SystemCall = new CPMSystemCall();
 
         _cpuTimer.Start();
         _screenTimer.Start();

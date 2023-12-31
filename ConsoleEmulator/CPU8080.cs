@@ -13,11 +13,15 @@ public class CPU8080
     public int States { get; private set; }
     public int Steps { get; private set; }
 
+    public ISystemCall? SystemCall { get; set; }
+
     public byte[] Memory { get; private set; } = [];
 
-    public CPU8080()
+    public CPU8080(ISystemCall? systemCall = null)
     {
         State = new State8080();
+
+        SystemCall = systemCall;
     }
 
     static CPU8080()
@@ -33,6 +37,11 @@ public class CPU8080
 
     public int Step()
     {
+        if (SystemCall != null && SystemCall.TryStep(this, out int done))
+        {
+            Steps++;
+            return done;
+        }
         byte opcode = Memory.AsSpan()[State.PC];
 
         // Pour debugger

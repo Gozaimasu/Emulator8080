@@ -13,4 +13,10 @@
     <ProjectReference Include="..\ConsoleEmulator\ConsoleEmulator.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="cpudiag.bin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
