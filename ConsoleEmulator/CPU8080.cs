@@ -487,18 +487,43 @@ public class CPU8080
             {
                 case 0: { State.A = Memory.AsSpan()[(State.B << 8) + State.C]; break; } // LDAX B
                 case 1: { State.A = Memory.AsSpan()[(State.D << 8) + State.E]; break; } // LDAX D
+                case 2:
+                    {
+                        // LHLD
+                        ushort addr = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]);
+                        State.L = Memory.AsSpan()[addr];
+                        State.H = Memory.AsSpan()[addr + 1];
+                        State.PC += 2;
+                        Cycles += 3;
+                        States += 9;
+                        break;
+                    }
                 case 3:
                     {
+                        // LDA addr
                         int addr = Memory.AsSpan()[State.PC++] + (Memory.AsSpan()[State.PC++] << 8);
                         State.A = Memory.AsSpan()[addr];
                         Cycles += 2;
                         States += 6;
                         break;
                     }
-                default: return UnimplementedInstruction();
             }
             Cycles += 2;
             States += 7;
+        }
+        // DCX
+        else if ((opcode & 0xCF) == 0x0B)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            switch (offset)
+            {
+                case 0: { if (State.C == 0x00) { State.C = 0xFF; State.B--; } else { State.C--; } break; } // DCX B
+                case 1: { if (State.E == 0x00) { State.E = 0xFF; State.D--; } else { State.E--; } break; } // DCX D
+                case 2: { if (State.L == 0x00) { State.L = 0xFF; State.H--; } else { State.L--; } break; } // DCX H
+                case 3: { State.SP--; break; } // INX SP
+            }
+            Cycles++;
+            States += 5;
         }
         // POP
         else if ((opcode & 0xCF) == 0xC1)
@@ -837,7 +862,6 @@ public class CPU8080
             {
                 // NOP
                 case 0x00: { Cycles++; States += 4; break; }
-
                 // RRC
                 case 0x0F:
                     {
