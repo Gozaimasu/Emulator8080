@@ -51,8 +51,34 @@ public class CPU8080
 
         State.PC++;
 
+        // INR
+        if ((opcode & 0xC7) == 0x04)
+        {
+            // Récupération de l'offset
+            int offset = (opcode >> 3) & 0x07;
+
+            if (offset == 6)
+            {
+                // DCR M
+                return UnimplementedInstruction();
+            }
+
+            // Récupération du registre correspondant et on incrémente la valeur
+            int res = State.GetRegister(offset) + 1;
+            ConditionCodes cc = State.CC;
+            // Modification de CC
+            cc.Z = res == 0 ? (byte)1 : (byte)0;
+            cc.S = (res & 0x80) != 0 ? (byte)1 : (byte)0;
+            cc.P = Parity(res, 8);
+            // Affectation de la nouvelle valeur de CC
+            State.CC = cc;
+            // Modification du registre
+            State.SetRegister(offset, (byte)(0xFF & res));
+            Cycles++;
+            States += 5;
+        }
         // DCR
-        if ((opcode & 0xC7) == 0x05)
+        else if ((opcode & 0xC7) == 0x05)
         {
             // Récupération de l'offset
             int offset = (opcode >> 3) & 0x07;
@@ -97,6 +123,90 @@ public class CPU8080
             }
 
             State.PC++;
+        }
+        // RCondition
+        else if ((opcode & 0xC7) == 0xC0)
+        {
+            // Récupération de la condition
+            int condition = (opcode >> 3) & 0x07;
+
+            switch (condition)
+            {
+                case 0:
+                    // RNZ adr
+                    if (State.CC.Z != 1)
+                    {
+                        Return();
+                        Cycles += 2;
+                        States += 6;
+                    }
+                    break;
+                case 1:
+                    // RZ adr
+                    if (State.CC.Z == 1)
+                    {
+                        Return();
+                        Cycles += 2;
+                        States += 6;
+                    }
+                    break;
+                case 2:
+                    // RNC adr
+                    if (State.CC.CY != 1)
+                    {
+                        Return();
+                        Cycles += 2;
+                        States += 6;
+                    }
+                    break;
+                case 3:
+                    // RC adr
+                    if (State.CC.CY == 1)
+                    {
+                        Return();
+                        Cycles += 2;
+                        States += 6;
+                    }
+                    break;
+                case 4:
+                    // RPO adr
+                    if (State.CC.P != 1)
+                    {
+                        Return();
+                        Cycles += 2;
+                        States += 6;
+                    }
+                    break;
+                case 5:
+                    // RPE adr
+                    if (State.CC.P == 1)
+                    {
+                        Return();
+                        Cycles += 2;
+                        States += 6;
+                    }
+                    break;
+                case 6:
+                    // RP adr
+                    if (State.CC.S != 1)
+                    {
+                        Return();
+                        Cycles += 2;
+                        States += 6;
+                    }
+                    break;
+                case 7:
+                    // RM adr
+                    if (State.CC.S == 1)
+                    {
+                        Return();
+                        Cycles += 2;
+                        States += 6;
+                    }
+                    break;
+            }
+            Cycles += 1;
+            States += 5;
         }
         // JCondition
         else if ((opcode & 0xC7) == 0xC2)
@@ -197,6 +307,106 @@ public class CPU8080
             }
             Cycles += 3;
             States += 10;
+        }
+        // CCondition
+        else if ((opcode & 0xC7) == 0xC4)
+        {
+            // Récupération de la condition
+            int condition = (opcode >> 3) & 0x07;
+
+            switch (condition)
+            {
+                case 0:
+                    // CNZ adr
+                    if (State.CC.Z != 1)
+                    {
+                        Call();
+                    }
+                    else
+                    {
+                        State.PC += 2;
+                    }
+                    break;
+                case 1:
+                    // CZ adr
+                    if (State.CC.Z == 1)
+                    {
+                        Call();
+                    }
+                    else
+                    {
+                        State.PC += 2;
+                    }
+                    break;
+                case 2:
+                    // CNC adr
+                    if (State.CC.CY != 1)
+                    {
+                        Call();
+                    }
+                    else
+                    {
+                        State.PC += 2;
+                    }
+                    break;
+                case 3:
+                    // CC adr
+                    if (State.CC.CY == 1)
+                    {
+                        Call();
+                    }
+                    else
+                    {
+                        State.PC += 2;
+                    }
+                    break;
+                case 4:
+                    // CPO adr
+                    if (State.CC.P != 1)
+                    {
+                        Call();
+                    }
+                    else
+                    {
+                        State.PC += 2;
+                    }
+                    break;
+                case 5:
+                    // CPE adr
+                    if (State.CC.P == 1)
+                    {
+                        Call();
+                    }
+                    else
+                    {
+                        State.PC += 2;
+                    }
+                    break;
+                case 6:
+                    // CP adr
+                    if (State.CC.S != 1)
+                    {
+                        Call();
+                    }
+                    else
+                    {
+                        State.PC += 2;
+                    }
+                    break;
+                case 7:
+                    // CM adr
+                    if (State.CC.S == 1)
+                    {
+                        Call();
+                    }
+                    else
+                    {
+                        State.PC += 2;
+                    }
+                    break;
+            }
+            Cycles += 5;
+            States += 17;
         }
         // LXI
         else if ((opcode & 0xCF) == 0x01)
@@ -435,7 +645,14 @@ public class CPU8080
                         States += 13;
                         break;
                     }
-
+                // JMP
+                case 0xC3:
+                    {
+                        State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]);
+                        Cycles += 3;
+                        States += 10;
+                        break;
+                    }
                 // ADI data
                 case 0xC6:
                     {
@@ -454,50 +671,18 @@ public class CPU8080
                         States += 7;
                         break;
                     }
-
-                // ANI data
-                case 0xE6:
-                    {
-                        State.A &= Memory.AsSpan()[State.PC++];
-                        ConditionCodes cc = State.CC;
-                        // Modification de CC
-                        cc.Z = State.A == 0 ? (byte)1 : (byte)0;
-                        cc.S = (State.A & 0x80) != 0 ? (byte)1 : (byte)0;
-                        cc.P = Parity(State.A, 8);
-                        cc.CY = 0x00;
-                        cc.AC = 0x00;
-                        // Affectation de la nouvelle valeur de CC
-                        State.CC = cc;
-                        Cycles += 2;
-                        States += 7;
-                        break;
-                    }
-
-                // JMP
-                case 0xC3:
-                    {
-                        State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]);
-                        Cycles += 3;
-                        States += 10;
-                        break;
-                    }
-
                 // RET
                 case 0xC9:
                     {
-                        State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.SP]);
-                        State.SP += 2;
+                        Return();
                         Cycles += 3;
                         States += 10;
                         break;
                     }
-
                 // CALL
                 case 0xCD:
                     {
-                        Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.SP - 2]) = (ushort)(State.PC + 2);
-                        State.SP -= 2;
-                        State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]);
+                        Call();
                         Cycles += 5;
                         States += 17;
                         break;
@@ -520,7 +705,6 @@ public class CPU8080
                         States += 7;
                         break;
                     }
-
                 // OUT port
                 case 0xD3:
                     {
@@ -534,14 +718,21 @@ public class CPU8080
                 case 0xD6:
                     {
                         byte value = Memory.AsSpan()[State.PC++];
-                        int result = State.A - value;
-                        State.A = (byte)(result & 0xFF);
                         ConditionCodes cc = State.CC;
+                        int result = State.A - value;
+                        if (State.A < (value + State.CC.CY))
+                        {
+                            cc.CY = 0x01;
+                        }
+                        else
+                        {
+                            cc.CY = 0x00;
+                        }
+                        State.A = (byte)(result & 0xFF);
                         // Modification de CC
                         cc.Z = State.A == 0 ? (byte)1 : (byte)0;
                         cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
                         cc.P = Parity(result, 8);
-                        cc.CY = result > 0xFF ? (byte)1 : (byte)0;
                         // Affectation de la nouvelle valeur de CC
                         State.CC = cc;
                         Cycles += 2;
@@ -582,6 +773,23 @@ public class CPU8080
                         States += 18;
                         break;
                     }
+                // ANI data
+                case 0xE6:
+                    {
+                        State.A &= Memory.AsSpan()[State.PC++];
+                        ConditionCodes cc = State.CC;
+                        // Modification de CC
+                        cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+                        cc.S = (State.A & 0x80) != 0 ? (byte)1 : (byte)0;
+                        cc.P = Parity(State.A, 8);
+                        cc.CY = 0x00;
+                        cc.AC = 0x00;
+                        // Affectation de la nouvelle valeur de CC
+                        State.CC = cc;
+                        Cycles += 2;
+                        States += 7;
+                        break;
+                    }
                 // XCHG
                 case 0xEB:
                     {
@@ -589,6 +797,40 @@ public class CPU8080
                         (State.E, State.L) = (State.L, State.E);
                         Cycles++;
                         States += 4;
+                        break;
+                    }
+                // XRI
+                case 0xEE:
+                    {
+                        State.A ^= Memory.AsSpan()[State.PC++];
+                        ConditionCodes cc = State.CC;
+                        // Modification de CC
+                        cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+                        cc.S = (State.A & 0x80) != 0 ? (byte)1 : (byte)0;
+                        cc.P = Parity(State.A, 8);
+                        cc.CY = 0x00;
+                        cc.AC = 0x00;
+                        // Affectation de la nouvelle valeur de CC
+                        State.CC = cc;
+                        Cycles += 2;
+                        States += 7;
+                        break;
+                    }
+                // ORI
+                case 0xF6:
+                    {
+                        State.A |= Memory.AsSpan()[State.PC++];
+                        ConditionCodes cc = State.CC;
+                        // Modification de CC
+                        cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+                        cc.S = (State.A & 0x80) != 0 ? (byte)1 : (byte)0;
+                        cc.P = Parity(State.A, 8);
+                        cc.CY = 0x00;
+                        cc.AC = 0x00;
+                        // Affectation de la nouvelle valeur de CC
+                        State.CC = cc;
+                        Cycles += 2;
+                        States += 7;
                         break;
                     }
                 // EI
@@ -910,9 +1152,22 @@ public class CPU8080
         value &= (1 << size) - 1;
         for (i = 0; i < size; i++)
         {
-            if ((value & 0x1) == 0) p++;
+            if ((value & 0x1) != 0) p++;
             value >>= 1;
         }
         return (byte)((0 == (p & 0x1)) ? 0x01 : 0x00);
+    }
+
+    private void Call()
+    {
+        Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.SP - 2]) = (ushort)(State.PC + 2);
+        State.SP -= 2;
+        State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]);
+    }
+
+    private void Return()
+    {
+        State.PC = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.SP]);
+        State.SP += 2;
     }
 }
