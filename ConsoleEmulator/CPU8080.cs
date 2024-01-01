@@ -56,15 +56,28 @@ public class CPU8080
         {
             // Récupération de l'offset
             int offset = (opcode >> 3) & 0x07;
-
+            int res;
             if (offset == 6)
             {
-                // DCR M
-                return UnimplementedInstruction();
+                // INR M
+                // Récupération de l'adresse
+                ushort addr = (ushort)((State.H << 8) + State.L);
+                // Récupération et incrément de la valeur
+                res = Memory.AsSpan()[addr] + 1;
+                // Modification de la mémoire
+                Memory.AsSpan()[addr] = (byte)(0xFF & res);
+                Cycles += 3;
+                States += 10;
             }
-
-            // Récupération du registre correspondant et on incrémente la valeur
-            int res = State.GetRegister(offset) + 1;
+            else
+            {
+                // Récupération du registre correspondant et on incrémente la valeur
+                res = State.GetRegister(offset) + 1;
+                // Modification du registre
+                State.SetRegister(offset, (byte)(0xFF & res));
+                Cycles++;
+                States += 5;
+            }
             ConditionCodes cc = State.CC;
             // Modification de CC
             cc.Z = res == 0 ? (byte)1 : (byte)0;
@@ -72,25 +85,34 @@ public class CPU8080
             cc.P = Parity(res, 8);
             // Affectation de la nouvelle valeur de CC
             State.CC = cc;
-            // Modification du registre
-            State.SetRegister(offset, (byte)(0xFF & res));
-            Cycles++;
-            States += 5;
         }
         // DCR
         else if ((opcode & 0xC7) == 0x05)
         {
             // Récupération de l'offset
             int offset = (opcode >> 3) & 0x07;
-
+            int res;
             if (offset == 6)
             {
                 // DCR M
-                return UnimplementedInstruction();
+                // Récupération de l'adresse
+                ushort addr = (ushort)((State.H << 8) + State.L);
+                // Récupération et incrément de la valeur
+                res = Memory.AsSpan()[addr] - 1;
+                // Modification de la mémoire
+                Memory.AsSpan()[addr] = (byte)(0xFF & res);
+                Cycles += 3;
+                States += 10;
             }
-
-            // Récupération du registre correspondant et on décrémente la valeur
-            int res = State.GetRegister(offset) - 1;
+            else
+            {
+                // Récupération du registre correspondant et on décrémente la valeur
+                res = State.GetRegister(offset) - 1;
+                // Modification du registre
+                State.SetRegister(offset, (byte)(0xFF & res));
+                Cycles++;
+                States += 5;
+            }
             ConditionCodes cc = State.CC;
             // Modification de CC
             cc.Z = res == 0 ? (byte)1 : (byte)0;
@@ -98,10 +120,6 @@ public class CPU8080
             cc.P = Parity(res, 8);
             // Affectation de la nouvelle valeur de CC
             State.CC = cc;
-            // Modification du registre
-            State.SetRegister(offset, (byte)(0xFF & res));
-            Cycles++;
-            States += 5;
         }
         // MVI
         else if ((opcode & 0xC7) == 0x06)
@@ -562,31 +580,141 @@ public class CPU8080
                 States += 5;
             }
         }
-        // XRA
-        else if ((opcode & 0xF8) == 0xA8)
+        // ADD
+        else if ((opcode & 0xF8) == 0x80)
         {
             // Récupération de l'offset
             int offset = opcode & 0x07;
+            byte value;
 
             if (offset == 0x06)
             {
-                // XRA M
-                State.A ^= Memory.AsSpan()[(State.H << 8) + State.L];
+                // ADD M
+                value = Memory.AsSpan()[(State.H << 8) + State.L];
                 Cycles += 2;
                 States += 7;
             }
             else
             {
-                // XRA r
-                State.A ^= State.GetRegister(offset);
+                // ADD r
+                value = State.GetRegister(offset);
                 Cycles++;
                 States += 4;
             }
+            int result = State.A + value;
+            State.A = (byte)(result & 0xFF);
             ConditionCodes cc = State.CC;
-            cc.Z = (byte)(State.A == 0 ? 1 : 0);
-            cc.S = (byte)((State.A >> 7) & 0x01);
-            cc.P = Parity(State.A, 8);
-            cc.CY = 0;
+            cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+            cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
+            cc.P = Parity(result, 8);
+            cc.CY = result > 0xFF ? (byte)1 : (byte)0;
+            cc.AC = 0;
+            State.CC = cc;
+        }
+        // ADC
+        else if ((opcode & 0xF8) == 0x88)
+        {
+            // Récupération de l'offset
+            int offset = opcode & 0x07;
+            byte value;
+
+            if (offset == 0x06)
+            {
+                // ADC M
+                value = Memory.AsSpan()[(State.H << 8) + State.L];
+                Cycles += 2;
+                States += 7;
+            }
+            else
+            {
+                // ADC r
+                value = State.GetRegister(offset);
+                Cycles++;
+                States += 4;
+            }
+            int result = State.A + value + State.CC.CY;
+            State.A = (byte)(result & 0xFF);
+            ConditionCodes cc = State.CC;
+            cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+            cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
+            cc.P = Parity(result, 8);
+            cc.CY = result > 0xFF ? (byte)1 : (byte)0;
+            cc.AC = 0;
+            State.CC = cc;
+        }
+        // SUB
+        else if ((opcode & 0xF8) == 0x90)
+        {
+            // Récupération de l'offset
+            int offset = opcode & 0x07;
+            byte value;
+
+            if (offset == 0x06)
+            {
+                // SUB M
+                value = Memory.AsSpan()[(State.H << 8) + State.L];
+                Cycles += 2;
+                States += 7;
+            }
+            else
+            {
+                // SUB r
+                value = State.GetRegister(offset);
+                Cycles++;
+                States += 4;
+            }
+            int result = State.A - value;
+            ConditionCodes cc = State.CC;
+            if (State.A < value)
+            {
+                cc.CY = 0x01;
+            }
+            else
+            {
+                cc.CY = 0x00;
+            }
+            State.A = (byte)(result & 0xFF);
+            cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+            cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
+            cc.P = Parity(result, 8);
+            cc.AC = 0;
+            State.CC = cc;
+        }
+        // SBB
+        else if ((opcode & 0xF8) == 0x98)
+        {
+            // Récupération de l'offset
+            int offset = opcode & 0x07;
+            byte value;
+
+            if (offset == 0x06)
+            {
+                // SBB M
+                value = Memory.AsSpan()[(State.H << 8) + State.L];
+                Cycles += 2;
+                States += 7;
+            }
+            else
+            {
+                // SBB r
+                value = State.GetRegister(offset);
+                Cycles++;
+                States += 4;
+            }
+            int result = State.A - value - State.CC.CY;
+            ConditionCodes cc = State.CC;
+            if (State.A < (value + cc.CY))
+            {
+                cc.CY = 0x01;
+            }
+            else
+            {
+                cc.CY = 0x00;
+            }
+            State.A = (byte)(result & 0xFF);
+            cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+            cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
+            cc.P = Parity(result, 8);
             cc.AC = 0;
             State.CC = cc;
         }
@@ -615,6 +743,91 @@ public class CPU8080
             cc.S = (byte)((State.A >> 7) & 0x01);
             cc.P = Parity(State.A, 8);
             cc.CY = 0;
+            cc.AC = 0;
+            State.CC = cc;
+        }
+        // XRA
+        else if ((opcode & 0xF8) == 0xA8)
+        {
+            // Récupération de l'offset
+            int offset = opcode & 0x07;
+
+            if (offset == 0x06)
+            {
+                // XRA M
+                State.A ^= Memory.AsSpan()[(State.H << 8) + State.L];
+                Cycles += 2;
+                States += 7;
+            }
+            else
+            {
+                // XRA r
+                State.A ^= State.GetRegister(offset);
+                Cycles++;
+                States += 4;
+            }
+            ConditionCodes cc = State.CC;
+            cc.Z = (byte)(State.A == 0 ? 1 : 0);
+            cc.S = (byte)((State.A >> 7) & 0x01);
+            cc.P = Parity(State.A, 8);
+            cc.CY = 0;
+            cc.AC = 0;
+            State.CC = cc;
+        }
+        // ORA
+        else if ((opcode & 0xF8) == 0xB0)
+        {
+            // Récupération de l'offset
+            int offset = opcode & 0x07;
+
+            if (offset == 0x06)
+            {
+                // ORA M
+                State.A |= Memory.AsSpan()[(State.H << 8) + State.L];
+                Cycles += 2;
+                States += 7;
+            }
+            else
+            {
+                // ORA r
+                State.A |= State.GetRegister(offset);
+                Cycles++;
+                States += 4;
+            }
+            ConditionCodes cc = State.CC;
+            cc.Z = (byte)(State.A == 0 ? 1 : 0);
+            cc.S = (byte)((State.A >> 7) & 0x01);
+            cc.P = Parity(State.A, 8);
+            cc.CY = 0;
+            cc.AC = 0;
+            State.CC = cc;
+        }
+        // CMP
+        else if ((opcode & 0xF8) == 0xB8)
+        {
+            // Récupération de l'offset
+            int offset = opcode & 0x07;
+            byte value;
+            if (offset == 0x06)
+            {
+                // CMP M
+                value = Memory.AsSpan()[(State.H << 8) + State.L];
+                Cycles += 2;
+                States += 7;
+            }
+            else
+            {
+                // CMP r
+                value = State.GetRegister(offset);
+                Cycles++;
+                States += 4;
+            }
+            int result = State.A - value;
+            ConditionCodes cc = State.CC;
+            cc.Z = result == 0 ? (byte)1 : (byte)0;
+            cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
+            cc.P = Parity(result, 8);
+            cc.CY = State.A < value ? (byte)1 : (byte)0;
             cc.AC = 0;
             State.CC = cc;
         }
