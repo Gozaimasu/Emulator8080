@@ -441,6 +441,50 @@ public class CPU8080
             Cycles += 3;
             States += 10;
         }
+        // STAX
+        else if ((opcode & 0xCF) == 0x02)
+        {
+            int offset = (opcode >> 4) & 0x3;
+            switch (offset)
+            {
+                case 0:
+                    {
+                        // STAX B
+                        ushort addr = (ushort)((State.B << 8) + State.C);
+                        Memory.AsSpan()[addr] = State.A;
+                        break;
+                    }
+                case 1:
+                    {
+                        // STAX D
+                        ushort addr = (ushort)((State.D << 8) + State.E);
+                        Memory.AsSpan()[addr] = State.A;
+                        break;
+                    }
+                case 2:
+                    {
+                        // SHLD
+                        ushort addr = Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.PC]);
+                        Memory.AsSpan()[addr] = State.L;
+                        Memory.AsSpan()[addr + 1] = State.H;
+                        State.PC += 2;
+                        Cycles += 3;
+                        States += 9;
+                        break;
+                    }
+                case 3:
+                    {
+                        // STA addr
+                        int addr = Memory.AsSpan()[State.PC++] + (Memory.AsSpan()[State.PC++] << 8);
+                        Memory.AsSpan()[addr] = State.A;
+                        Cycles += 2;
+                        States += 6;
+                        break;
+                    }
+            }
+            Cycles += 2;
+            States += 7;
+        }
         // INX
         else if ((opcode & 0xCF) == 0x03)
         {
@@ -871,15 +915,6 @@ public class CPU8080
                         State.A = (byte)((State.A >> 1) | (State.A << 7));
                         Cycles++;
                         States += 4;
-                        break;
-                    }
-                // STA
-                case 0x32:
-                    {
-                        int addr = Memory.AsSpan()[State.PC++] + (Memory.AsSpan()[State.PC++] << 8);
-                        Memory.AsSpan()[addr] = State.A;
-                        Cycles += 4;
-                        States += 13;
                         break;
                     }
                 // JMP
