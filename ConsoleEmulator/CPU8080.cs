@@ -671,13 +671,14 @@ public class CPU8080
                 States += 4;
             }
             int result = State.A + value;
+            int resultLow = (State.A & 0x0F) + (value & 0x0F);
             State.A = (byte)(result & 0xFF);
             ConditionCodes cc = State.CC;
             cc.Z = State.A == 0 ? (byte)1 : (byte)0;
             cc.S = (result & 0x80) != 0 ? (byte)1 : (byte)0;
             cc.P = Parity(result, 8);
             cc.CY = result > 0xFF ? (byte)1 : (byte)0;
-            cc.AC = 0;
+            cc.AC = resultLow > 0x0F ? (byte)1 : (byte)0;
             State.CC = cc;
         }
         // ADC
@@ -906,6 +907,18 @@ public class CPU8080
             {
                 // NOP
                 case 0x00: { Cycles++; States += 4; break; }
+                // RLC
+                case 0x07:
+                    {
+                        int result = State.A << 1;
+                        ConditionCodes cc = State.CC;
+                        cc.CY = (byte)((result >> 8) & 0x01);
+                        State.CC = cc;
+                        State.A = (byte)(result | cc.CY);
+                        Cycles++;
+                        States += 4;
+                        break;
+                    }
                 // RRC
                 case 0x0F:
                     {
@@ -913,6 +926,83 @@ public class CPU8080
                         cc.CY = (byte)(State.A & 0x01);
                         State.CC = cc;
                         State.A = (byte)((State.A >> 1) | (State.A << 7));
+                        Cycles++;
+                        States += 4;
+                        break;
+                    }
+                // RAL
+                case 0x17:
+                    {
+                        int result = State.A << 1;
+                        ConditionCodes cc = State.CC;
+                        State.A = (byte)(result | cc.CY);
+                        cc.CY = (byte)((result >> 8) & 0x01);
+                        State.CC = cc;
+                        Cycles++;
+                        States += 4;
+                        break;
+                    }
+                // RAR
+                case 0x1F:
+                    {
+                        byte cy = (byte)(State.A & 0x01);
+                        var cc = State.CC;
+                        State.A = (byte)((State.A >> 1) | (cc.CY << 7));
+                        cc.CY = cy;
+                        State.CC = cc;
+                        Cycles++;
+                        States += 4;
+                        break;
+                    }
+                // DAA
+                case 0x27:
+                    {
+                        int result = State.A;
+                        byte l = (byte)(result & 0x0F);
+                        if ((l > 0x09) || (State.CC.AC == 0x01))
+                        {
+                            result += 6;
+                        }
+                        l = (byte)((result >> 4) & 0x0F);
+                        if ((l > 0x09) || (State.CC.AC == 0x01))
+                        {
+                            result += 0x60;
+                        }
+                        State.A = (byte)(result & 0xFF);
+                        ConditionCodes cc = State.CC;
+                        cc.Z = State.A == 0 ? (byte)1 : (byte)0;
+                        cc.S = (State.A & 0x80) != 0 ? (byte)1 : (byte)0;
+                        cc.P = Parity(State.A, 8);
+                        cc.CY = result > 0xFF ? (byte)1 : (byte)0;
+                        State.CC = cc;
+                        Cycles++;
+                        States += 4;
+                        break;
+                    }
+                // CMA
+                case 0x2F:
+                    {
+                        State.A = (byte)~State.A;
+                        Cycles++;
+                        States += 4;
+                        break;
+                    }
+                // STC
+                case 0x37:
+                    {
+                        ConditionCodes cc = State.CC;
+                        cc.CY = 0x01;
+                        State.CC = cc;
+                        Cycles++;
+                        States += 4;
+                        break;
+                    }
+                // CMC
+                case 0x3F:
+                    {
+                        ConditionCodes cc = State.CC;
+                        cc.CY = (byte)(~cc.CY & 0x01);
+                        State.CC = cc;
                         Cycles++;
                         States += 4;
                         break;
@@ -1062,6 +1152,14 @@ public class CPU8080
                         States += 7;
                         break;
                     }
+                // PCHL
+                case 0xE9:
+                    {
+                        State.PC = (ushort)((State.H << 8) + State.L);
+                        Cycles++;
+                        States += 5;
+                        break;
+                    }
                 // XCHG
                 case 0xEB:
                     {
@@ -1103,6 +1201,14 @@ public class CPU8080
                         State.CC = cc;
                         Cycles += 2;
                         States += 7;
+                        break;
+                    }
+                // SPHL
+                case 0xF9:
+                    {
+                        State.SP = (ushort)((State.H << 8) + State.L);
+                        Cycles++;
+                        States += 5;
                         break;
                     }
                 // EI
