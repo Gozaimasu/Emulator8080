@@ -7,6 +7,18 @@ internal class ConsoleDebugOutput : IDebugOutput
         Console.Write(message);
     }
 
+    public void Write(char c)
+    {
+        if (c == 0x0C)
+        {
+            Console.Clear();
+        }
+        else
+        {
+            Console.Write(c);
+        }
+    }
+
     public void Write(string messageFormat, object? arg0)
     {
         Console.Write(messageFormat, arg0);

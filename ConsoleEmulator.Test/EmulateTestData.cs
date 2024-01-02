@@ -6,7 +6,7 @@ internal class EmulateTestData
     {
         yield return new object[] { 2, 1, 0, 0, 0, 0, 0, 1 };
         yield return new object[] { 1, 0, 1, 0, 1, 0, 0, 0 };
-        yield return new object[] { 0, 0xFF, 0, 1, 0, 1, 0, 1 };
+        yield return new object[] { 0, 0xFF, 0, 1, 1, 1, 0, 1 };
         yield return new object[] { 128, 127, 0, 0, 0, 0, 1, 1 };
     }
 
@@ -174,7 +174,7 @@ internal class EmulateTestData
     {
         yield return new object[] { new byte[] { 0xFE, 0x0F }, 0x10, 1, 1, 1, 1, 0, 0, 0, 0 };
         yield return new object[] { new byte[] { 0xFE, 0x0F }, 0x0F, 0, 1, 0, 1, 1, 0, 1, 0 };
-        yield return new object[] { new byte[] { 0xFE, 0x0F }, 0x0E, 1, 0, 1, 0, 0, 1, 0, 1 };
+        yield return new object[] { new byte[] { 0xFE, 0x0F }, 0x0E, 1, 0, 1, 0, 0, 1, 1, 1 };
         yield return new object[] { new byte[] { 0xFE, 0x90 }, 0x0F, 1, 1, 1, 0, 0, 0, 0, 1 };
     }
 
@@ -200,24 +200,24 @@ internal class EmulateTestData
     {
         yield return new object[] { new byte[] { 0xC6, 0x01},
             0x01 /* initialA */,
-            new ConditionCodes() { Z = 1, S = 1, P = 0, CY = 1} /* initialCC */,
+            new ConditionCodes() { Z = 1, S = 1, P = 1, CY = 1} /* initialCC */,
             0x02 /* expectedA */,
-            new ConditionCodes() { Z = 0, S = 0, P = 1, CY = 0} /* expectedCC */};
+            new ConditionCodes() { Z = 0, S = 0, P = 0, CY = 0} /* expectedCC */};
         yield return new object[] { new byte[] { 0xC6, 0x02},
             0x01 /* initialA */,
-            new ConditionCodes() { Z = 1, S = 1, P = 1, CY = 1} /* initialCC */,
-            0x03 /* expectedA */,
-            new ConditionCodes() { Z = 0, S = 0, P = 0, CY = 0} /* expectedCC */};
-        yield return new object[] { new byte[] { 0xC6, 0x01},
-            0x0F /* initialA */,
             new ConditionCodes() { Z = 1, S = 1, P = 0, CY = 1} /* initialCC */,
-            0x10 /* expectedA */,
+            0x03 /* expectedA */,
             new ConditionCodes() { Z = 0, S = 0, P = 1, CY = 0} /* expectedCC */};
         yield return new object[] { new byte[] { 0xC6, 0x01},
+            0x0F /* initialA */,
+            new ConditionCodes() { Z = 1, S = 1, P = 1, CY = 1} /* initialCC */,
+            0x10 /* expectedA */,
+            new ConditionCodes() { Z = 0, S = 0, P = 0, CY = 0} /* expectedCC */};
+        yield return new object[] { new byte[] { 0xC6, 0x01},
             0xFE /* initialA */,
-            new ConditionCodes() { Z = 1, S = 0, P = 1, CY = 1} /* initialCC */,
+            new ConditionCodes() { Z = 1, S = 0, P = 0, CY = 1} /* initialCC */,
             0xFF /* expectedA */,
-            new ConditionCodes() { Z = 0, S = 1, P = 0, CY = 0} /* expectedCC */};
+            new ConditionCodes() { Z = 0, S = 1, P = 1, CY = 0} /* expectedCC */};
         yield return new object[] { new byte[] { 0xC6, 0x01},
             0xFF /* initialA */,
             new ConditionCodes() { Z = 0, S = 1, P = 0, CY = 0} /* initialCC */,

@@ -16,6 +16,11 @@ internal class TestDebugOutput : IDebugOutput
         _outputBuilder.Append(message);
     }
 
+    public void Write(char c)
+    {
+        _outputBuilder.Append(c);
+    }
+
     public void Write(string messageFormat, object? arg0)
     {
         _outputBuilder.AppendFormat(messageFormat, arg0);
