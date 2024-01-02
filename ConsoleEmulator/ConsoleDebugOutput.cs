@@ -9,7 +9,14 @@ internal class ConsoleDebugOutput : IDebugOutput
 
     public void Write(char c)
     {
-        Console.Write(c);
+        if (c == 0x0C)
+        {
+            Console.Clear();
+        }
+        else
+        {
+            Console.Write(c);
+        }
     }
 
     public void Write(string messageFormat, object? arg0)

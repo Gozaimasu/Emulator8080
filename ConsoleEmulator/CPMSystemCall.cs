@@ -17,7 +17,7 @@ public class CPMSystemCall : ISystemCall
             {
                 // C_WRITESTR
                 ushort addr = (ushort)((cpu.State.D << 8) + cpu.State.E);
-                addr += 3;
+                //addr += 3;
                 char str = (char)cpu.Memory.AsSpan()[addr++];
                 while (str != '$')
                 {
