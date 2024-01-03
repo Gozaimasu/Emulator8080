@@ -5,10 +5,12 @@ namespace ConsoleEmulator;
 public class CPU8080
 {
     public delegate void OutputCallback(byte port, byte data);
+    public delegate byte InputCallback(byte port);
 
     public State8080 State { get; private set; }
     public static IDebugOutput DebugOutput { get; set; } = null!;
     public OutputCallback? Output { get; set; }
+    public InputCallback? Input { get; set; }
     public int Cycles { get; private set; }
     public int States { get; private set; }
     public int Steps { get; private set; }
@@ -1101,6 +1103,18 @@ public class CPU8080
                         States += 7;
                         break;
                     }
+                // IN port
+                case 0xDB:
+                    {
+                        byte port = Memory.AsSpan()[State.PC++];
+                        if (Input != null)
+                        {
+                            State.A = Input.Invoke(port);
+                        }
+                        Cycles += 3;
+                        States += 10;
+                        break;
+                    }
                 // SBI
                 case 0xDE:
                     {
@@ -1513,6 +1527,17 @@ public class CPU8080
         }
         DebugOutput.WriteLine();
         return opbytes;
+    }
+
+    public void HandleInterrupt(int interruptNumber)
+    {
+        if (State.IntEnable == 0)
+        {
+            return;
+        }
+        Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.SP - 2]) = State.PC;
+        State.SP -= 2;
+        State.PC = (ushort)(0x08 * interruptNumber);
     }
 
     private int UnimplementedInstruction()
