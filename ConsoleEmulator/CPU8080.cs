@@ -1515,6 +1515,17 @@ public class CPU8080
         return opbytes;
     }
 
+    public void HandleInterrupt(int interruptNumber)
+    {
+        if (State.IntEnable == 0)
+        {
+            return;
+        }
+        Unsafe.As<byte, ushort>(ref Memory.AsSpan()[State.SP - 2]) = State.PC;
+        State.SP -= 2;
+        State.PC = (ushort)(0x08 * interruptNumber);
+    }
+
     private int UnimplementedInstruction()
     {
         State.PC--;

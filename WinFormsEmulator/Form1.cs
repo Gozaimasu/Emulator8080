@@ -11,6 +11,8 @@ public partial class Form1 : Form
     private readonly System.Timers.Timer _screenTimer;
     private readonly Stopwatch _stopwatch = new();
     private long _lastCpuStep = 0;
+    private long _lastInterrupt96 = -9524;
+    private long _lastInterrupt224 = 0;
 
     public Form1()
     {
@@ -53,6 +55,18 @@ public partial class Form1 : Form
 
         long elapsed = _stopwatch.ElapsedMilliseconds;
         long diff = elapsed - _lastCpuStep;
+        long diffInterrupt = elapsed - _lastInterrupt96;
+        if (diffInterrupt > _screenTimer.Interval)
+        {
+            _cpu.HandleInterrupt(1);
+            _lastInterrupt96 = elapsed;
+        }
+        diffInterrupt = elapsed - _lastInterrupt224;
+        if (diffInterrupt > _screenTimer.Interval)
+        {
+            _cpu.HandleInterrupt(2);
+            _lastInterrupt224 = elapsed;
+        }
 
         // 2 MHz = 2000 cycles per milliseconds
         long cyclesToRun = 2000 * diff;
