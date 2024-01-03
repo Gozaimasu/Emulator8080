@@ -173,7 +173,7 @@ public partial class Form1 : Form
             }
             return result;
         }
-        return 0;
+        return _cpu.State.A;
     }
 
     private void Form1_Load(object sender, EventArgs e)
