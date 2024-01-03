@@ -23,7 +23,8 @@ public partial class Form1 : Form
     {
         _cpu = new CPU8080
         {
-            Input = Input
+            Input = Input,
+            Output = OnOutput
         };
         _cpuTimer = new()
         {
@@ -174,6 +175,14 @@ public partial class Form1 : Form
             return result;
         }
         return _cpu.State.A;
+    }
+
+    private void OnOutput(byte port, byte data)
+    {
+        if (port != 0x06)
+        {
+            Console.WriteLine("{0} {1}", port, data);
+        }
     }
 
     private void Form1_Load(object sender, EventArgs e)
