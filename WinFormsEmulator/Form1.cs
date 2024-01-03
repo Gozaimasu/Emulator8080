@@ -13,10 +13,18 @@ public partial class Form1 : Form
     private long _lastCpuStep = 0;
     private long _lastInterrupt96 = -9524;
     private long _lastInterrupt224 = 0;
+    private bool _coinInserted = false;
+    private bool _start = false;
+    private bool _left = false;
+    private bool _right = false;
+    private bool _shot = false;
 
     public Form1()
     {
-        _cpu = new CPU8080();
+        _cpu = new CPU8080
+        {
+            Input = Input
+        };
         _cpuTimer = new()
         {
             Interval = 1
@@ -137,6 +145,37 @@ public partial class Form1 : Form
         _stopwatch.Start();
     }
 
+    private byte Input(byte port)
+    {
+        if (port == 0x01)
+        {
+            byte result = 0x08;
+            if (_coinInserted)
+            {
+                result |= 0x01;
+                _coinInserted = false;
+            }
+            if (_start)
+            {
+                result |= 0x04;
+            }
+            if (_shot)
+            {
+                result |= 0x10;
+            }
+            if (_left)
+            {
+                result |= 0x20;
+            }
+            if (_right)
+            {
+                result |= 0x40;
+            }
+            return result;
+        }
+        return 0;
+    }
+
     private void Form1_Load(object sender, EventArgs e)
     {
         AllocConsole();
@@ -145,4 +184,48 @@ public partial class Form1 : Form
     [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool AllocConsole();
+
+    private void Form1_KeyUp(object sender, KeyEventArgs e)
+    {
+        if (e.KeyData == Keys.C)
+        {
+            _coinInserted = true;
+        }
+        if (e.KeyData == Keys.Enter)
+        {
+            _start = false;
+        }
+        if (e.KeyData == Keys.Left)
+        {
+            _left = false;
+        }
+        if (e.KeyData == Keys.Right)
+        {
+            _right = false;
+        }
+        if (e.KeyData == Keys.Up)
+        {
+            _shot = false;
+        }
+    }
+
+    private void Form1_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.KeyData == Keys.Enter)
+        {
+            _start = true;
+        }
+        if (e.KeyData == Keys.Left)
+        {
+            _left = true;
+        }
+        if (e.KeyData == Keys.Right)
+        {
+            _right = true;
+        }
+        if (e.KeyData == Keys.Up)
+        {
+            _shot = true;
+        }
+    }
 }

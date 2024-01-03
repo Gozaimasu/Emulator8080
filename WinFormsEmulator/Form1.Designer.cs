@@ -57,14 +57,14 @@
             // loadFileToolStripMenuItem
             // 
             loadFileToolStripMenuItem.Name = "loadFileToolStripMenuItem";
-            loadFileToolStripMenuItem.Size = new Size(180, 22);
+            loadFileToolStripMenuItem.Size = new Size(148, 22);
             loadFileToolStripMenuItem.Text = "Load File";
             loadFileToolStripMenuItem.Click += LoadFileToolStripMenuItem_Click;
             // 
             // toolStripMenuItem2
             // 
             toolStripMenuItem2.Name = "toolStripMenuItem2";
-            toolStripMenuItem2.Size = new Size(180, 22);
+            toolStripMenuItem2.Size = new Size(148, 22);
             toolStripMenuItem2.Text = "Cpu Diagnose";
             toolStripMenuItem2.Click += OnCpuDiagnoseClick;
             // 
@@ -93,6 +93,8 @@
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
+            KeyDown += Form1_KeyDown;
+            KeyUp += Form1_KeyUp;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
