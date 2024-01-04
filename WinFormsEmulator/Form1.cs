@@ -1,5 +1,7 @@
 using ConsoleEmulator;
+using Emulator;
 using System.Diagnostics;
+using System.Media;
 using System.Runtime.InteropServices;
 
 namespace WinFormsEmulator;
@@ -13,10 +15,23 @@ public partial class Form1 : Form
     private long _lastCpuStep = 0;
     private long _lastInterrupt96 = -9524;
     private long _lastInterrupt224 = 0;
+    private readonly ArcadeInput _arcadePort1 = new();
+    private readonly ShiftOffsetDevice _shiftOffsetDevice = new();
+    private readonly ShiftDevice _shiftDevice;
 
     public Form1()
     {
-        _cpu = new CPU8080();
+        _cpu = new();
+
+        _shiftDevice = new(_shiftOffsetDevice);
+
+        _cpu.AddOutputDevice(2, _shiftOffsetDevice);
+        _cpu.AddOutputDevice(3, new SoundDevice(3));
+        _cpu.AddOutputDevice(4, _shiftDevice);
+        _cpu.AddOutputDevice(5, new SoundDevice(5));
+
+        _cpu.AddInputDevice(1, _arcadePort1);
+        _cpu.AddInputDevice(3, _shiftDevice);
         _cpuTimer = new()
         {
             Interval = 1
@@ -145,4 +160,14 @@ public partial class Form1 : Form
     [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool AllocConsole();
+
+    private void Form1_KeyUp(object sender, KeyEventArgs e)
+    {
+        _arcadePort1.KeyUp(e.KeyData);
+    }
+
+    private void Form1_KeyDown(object sender, KeyEventArgs e)
+    {
+        _arcadePort1.KeyDown(e.KeyData);
+    }
 }
