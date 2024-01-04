@@ -1,5 +1,6 @@
 using ConsoleEmulator;
 using System.Diagnostics;
+using System.Media;
 using System.Runtime.InteropServices;
 
 namespace WinFormsEmulator;
@@ -18,6 +19,8 @@ public partial class Form1 : Form
     private bool _left = false;
     private bool _right = false;
     private bool _shot = false;
+    private byte _lastPort3Data = 0;
+    private byte _lastPort5Data = 0;
 
     public Form1()
     {
@@ -179,6 +182,67 @@ public partial class Form1 : Form
 
     private void OnOutput(byte port, byte data)
     {
+        if (port == 0x03)
+        {
+            if (data == _lastPort3Data)
+                return;
+
+            if ((data & 0x01) != 0)
+            {
+                SoundPlayer soundPlayer = new(Properties.Resources.ufo_highpitch);
+                soundPlayer.Play();
+            }
+            if ((data & 0x02) != 0)
+            {
+                SoundPlayer soundPlayer = new(Properties.Resources.shoot);
+                soundPlayer.Play();
+            }
+            if ((data & 0x04) != 0)
+            {
+                SoundPlayer soundPlayer = new(Properties.Resources.explosion);
+                soundPlayer.Play();
+            }
+            if ((data & 0x08) != 0)
+            {
+                SoundPlayer soundPlayer = new(Properties.Resources.invaderkilled);
+                soundPlayer.Play();
+            }
+            _lastPort3Data = data;
+            return;
+        }
+        if (port == 0x05)
+        {
+            if (data == _lastPort5Data)
+                return;
+
+            if ((data & 0x01) != 0)
+            {
+                SoundPlayer soundPlayer = new(Properties.Resources.fastinvader1);
+                soundPlayer.Play();
+            }
+            if ((data & 0x02) != 0)
+            {
+                SoundPlayer soundPlayer = new(Properties.Resources.fastinvader2);
+                soundPlayer.Play();
+            }
+            if ((data & 0x04) != 0)
+            {
+                SoundPlayer soundPlayer = new(Properties.Resources.fastinvader3);
+                soundPlayer.Play();
+            }
+            if ((data & 0x08) != 0)
+            {
+                SoundPlayer soundPlayer = new(Properties.Resources.fastinvader4);
+                soundPlayer.Play();
+            }
+            if ((data & 0x10) != 0)
+            {
+                SoundPlayer soundPlayer = new(Properties.Resources.ufo_lowpitch);
+                soundPlayer.Play();
+            }
+            _lastPort5Data = data;
+            return;
+        }
         if (port != 0x06)
         {
             Console.WriteLine("{0} {1}", port, data);
