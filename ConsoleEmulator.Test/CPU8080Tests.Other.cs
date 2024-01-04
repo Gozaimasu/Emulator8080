@@ -1,4 +1,7 @@
-﻿namespace ConsoleEmulator.Test;
+﻿using Emulator;
+using NSubstitute;
+
+namespace ConsoleEmulator.Test;
 
 public partial class CPU8080Tests
 {
@@ -296,7 +299,8 @@ public partial class CPU8080Tests
         CPU8080 sut = new();
         sut.Init([0xD3, 0x01], 0);
         sut.State.A = 0x02;
-        sut.Output = delegate (byte port, byte data) { Assert.Equal(0x01, port); Assert.Equal(0x02, data); };
+        IOutputDevice outputDevice =  Substitute.For<IOutputDevice>();
+        sut.AddOutputDevice(0x01, outputDevice);
 
         // Act
         int done = sut.Step();
@@ -304,6 +308,7 @@ public partial class CPU8080Tests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(2, sut.State.PC);
+        outputDevice.Received(1).Process(0x02);
     }
 
     [Fact]
