@@ -308,7 +308,7 @@ public partial class CPU8080Tests
         // Assert
         Assert.Equal(0, done);
         Assert.Equal(2, sut.State.PC);
-        outputDevice.Received(1).Process(0x02);
+        outputDevice.Received(1).WriteByte(0x02);
     }
 
     [Fact]

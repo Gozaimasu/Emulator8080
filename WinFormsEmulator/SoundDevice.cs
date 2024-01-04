@@ -40,7 +40,7 @@ internal class SoundDevice : IOutputDevice
         }
     }
 
-    public void Process(byte data)
+    public void WriteByte(byte data)
     {
         if (data == _lastData)
         {

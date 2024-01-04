@@ -2,5 +2,5 @@
 
 public interface IOutputDevice
 {
-    void Process(byte data);
+    void WriteByte(byte data);
 }

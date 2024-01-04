@@ -5,16 +5,15 @@ namespace ConsoleEmulator;
 
 public class CPU8080
 {
-    public delegate byte InputCallback(byte port);
 
     public State8080 State { get; private set; }
     public static IDebugOutput DebugOutput { get; set; } = null!;
-    public InputCallback? Input { get; set; }
     public int Cycles { get; private set; }
     public int States { get; private set; }
     public int Steps { get; private set; }
 
     private readonly Dictionary<byte, IOutputDevice> _outputDevices = new(8);
+    private readonly Dictionary<byte, IInputDevice> _inputDevices = new(8);
 
     public ISystemCall? SystemCall { get; set; }
 
@@ -1076,7 +1075,7 @@ public class CPU8080
                         byte port = Memory.AsSpan()[State.PC++];
                         if (_outputDevices.TryGetValue(port, out var device))
                         {
-                            device!.Process(State.A);
+                            device!.WriteByte(State.A);
                         }
                         Cycles += 3;
                         States += 10;
@@ -1111,9 +1110,9 @@ public class CPU8080
                 case 0xDB:
                     {
                         byte port = Memory.AsSpan()[State.PC++];
-                        if (Input != null)
+                        if (_inputDevices.TryGetValue(port, out var device))
                         {
-                            State.A = Input.Invoke(port);
+                            State.A = device!.ReadByte();
                         }
                         Cycles += 3;
                         States += 10;
@@ -1547,6 +1546,11 @@ public class CPU8080
     public void AddOutputDevice(byte port, IOutputDevice outputDevice)
     {
         _outputDevices.Add(port, outputDevice);
+    }
+
+    public void AddInputDevice(byte port, IInputDevice inputDevice)
+    {
+        _inputDevices.Add(port, inputDevice);
     }
 
     private int UnimplementedInstruction()
