@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ConsoleEmulator\Emulator.csproj" />
+    <ProjectReference Include="..\Emulator\Emulator.csproj" />
   </ItemGroup>
 
   <ItemGroup>

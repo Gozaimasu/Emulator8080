@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emulator", "ConsoleEmulator\Emulator.csproj", "{183C14E8-DAE1-4C7B-884C-E19E78409019}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emulator", "Emulator\Emulator.csproj", "{183C14E8-DAE1-4C7B-884C-E19E78409019}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleEmulator.Test", "ConsoleEmulator.Test\ConsoleEmulator.Test.csproj", "{A91220D4-D6A1-46B3-96CB-37D607A3982C}"
 EndProject
