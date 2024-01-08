@@ -1,7 +1,6 @@
 using ConsoleEmulator;
-using Emulator;
+using System.Buffers;
 using System.Diagnostics;
-using System.Media;
 using System.Runtime.InteropServices;
 
 namespace WinFormsEmulator;
@@ -50,15 +49,20 @@ public partial class Form1 : Form
     {
         _screenTimer.Enabled = false;
 
-        byte[] vram = new byte[7168];
-        Array.Copy(_cpu.Memory, 0x2400, vram, 0, 7168);
-        Array.Reverse(vram);
-
-        IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(vram, 0);
-        using (Bitmap bmp = new(256, 224, 32, System.Drawing.Imaging.PixelFormat.Format1bppIndexed, ptr))
+        byte[] vram = ArrayPool<byte>.Shared.Rent(7168);
+        try
         {
+            _cpu.Memory.AsSpan()[0x2400..].CopyTo(vram.AsSpan());
+            vram.AsSpan()[..7168].Reverse();
+
+            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(vram, 0);
+            using Bitmap bmp = new(256, 224, 32, System.Drawing.Imaging.PixelFormat.Format1bppIndexed, ptr);
             bmp.RotateFlip(RotateFlipType.Rotate90FlipNone);
             pictureBox1.Image = (Image)bmp.Clone();
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(vram);
         }
 
         _screenTimer.Enabled = true;
