@@ -1,11 +1,14 @@
 using ConsoleEmulator;
 using System.Buffers;
 using System.Diagnostics;
+using System.Drawing.Imaging;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using static Win32;
 
 namespace WinFormsEmulator;
 
-public partial class Form1 : Form
+public unsafe partial class Form1 : Form
 {
     private readonly CPU8080 _cpu;
     private readonly System.Timers.Timer _cpuTimer;
@@ -17,6 +20,29 @@ public partial class Form1 : Form
     private readonly ArcadeInput _arcadePort1 = new();
     private readonly ShiftOffsetDevice _shiftOffsetDevice = new();
     private readonly ShiftDevice _shiftDevice;
+    private Bitmap _bitmap = new(256, 224);
+
+    class BitmapInfo
+    {
+        internal static BITMAPINFO bmi = new()
+        {
+            bmiHeader = new BITMAPINFOHEADER
+            {
+                biSize = (uint)sizeof(BITMAPINFOHEADER),
+                biWidth = 224,
+                biHeight = -256,
+                biPlanes = 1,
+                biBitCount = 1,
+                biCompression = BI.RGB,
+                biSizeImage = 0,
+                biXPelsPerMeter = 0,
+                biYPelsPerMeter = 0,
+                biClrUsed = 0,
+                biClrImportant = 0,
+            },
+            bmiColors = default
+        };
+    }
 
     public Form1()
     {
@@ -55,10 +81,23 @@ public partial class Form1 : Form
             _cpu.Memory.AsSpan()[0x2400..].CopyTo(vram.AsSpan());
             vram.AsSpan()[..7168].Reverse();
 
-            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(vram, 0);
-            using Bitmap bmp = new(256, 224, 32, System.Drawing.Imaging.PixelFormat.Format1bppIndexed, ptr);
-            bmp.RotateFlip(RotateFlipType.Rotate90FlipNone);
-            pictureBox1.Image = (Image)bmp.Clone();
+            //IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(vram, 0);
+            //using Bitmap bmp = new(256, 224, 32, System.Drawing.Imaging.PixelFormat.Format1bppIndexed, ptr);
+            //bmp.RotateFlip(RotateFlipType.Rotate90FlipNone);
+
+            IntPtr hbitmap = _bitmap.GetHbitmap();
+            try
+            {
+                BitmapData bitmapData = _bitmap.LockBits(new Rectangle(0, 0, 256, 224), ImageLockMode.WriteOnly, PixelFormat.Format1bppIndexed);
+                Marshal.Copy(vram, 0, bitmapData.Scan0, 7168);
+                _bitmap.UnlockBits(bitmapData);
+            }
+            finally
+            {
+                DeleteObject(hbitmap);
+            }
+
+            pictureBox1.Image = _bitmap;
         }
         finally
         {
