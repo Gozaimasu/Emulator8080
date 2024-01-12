@@ -33,12 +33,14 @@ public partial class Form1 : Form
         _cpu.AddInputDevice(3, _shiftDevice);
         _cpuTimer = new()
         {
-            Interval = 1
+            Interval = 1,
+            AutoReset = false
         };
         _cpuTimer.Elapsed += OnCpuTimer;
         _screenTimer = new()
         {
-            Interval = TimeSpan.FromMicroseconds(16666).TotalMilliseconds
+            Interval = TimeSpan.FromMicroseconds(16666).TotalMilliseconds,
+            AutoReset = false
         };
         _screenTimer.Elapsed += OnScreenTimer;
 
