@@ -31,7 +31,6 @@
             menuStrip1 = new MenuStrip();
             toolStripMenuItem1 = new ToolStripMenuItem();
             loadFileToolStripMenuItem = new ToolStripMenuItem();
-            toolStripMenuItem2 = new ToolStripMenuItem();
             openFileDialog1 = new OpenFileDialog();
             pictureBox1 = new PictureBox();
             menuStrip1.SuspendLayout();
@@ -49,7 +48,7 @@
             // 
             // toolStripMenuItem1
             // 
-            toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { loadFileToolStripMenuItem, toolStripMenuItem2 });
+            toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { loadFileToolStripMenuItem });
             toolStripMenuItem1.Name = "toolStripMenuItem1";
             toolStripMenuItem1.Size = new Size(125, 20);
             toolStripMenuItem1.Text = "toolStripMenuItem1";
@@ -57,16 +56,9 @@
             // loadFileToolStripMenuItem
             // 
             loadFileToolStripMenuItem.Name = "loadFileToolStripMenuItem";
-            loadFileToolStripMenuItem.Size = new Size(148, 22);
+            loadFileToolStripMenuItem.Size = new Size(180, 22);
             loadFileToolStripMenuItem.Text = "Load File";
             loadFileToolStripMenuItem.Click += LoadFileToolStripMenuItem_Click;
-            // 
-            // toolStripMenuItem2
-            // 
-            toolStripMenuItem2.Name = "toolStripMenuItem2";
-            toolStripMenuItem2.Size = new Size(148, 22);
-            toolStripMenuItem2.Text = "Cpu Diagnose";
-            toolStripMenuItem2.Click += OnCpuDiagnoseClick;
             // 
             // openFileDialog1
             // 
@@ -109,6 +101,5 @@
         private ToolStripMenuItem loadFileToolStripMenuItem;
         private OpenFileDialog openFileDialog1;
         private PictureBox pictureBox1;
-        private ToolStripMenuItem toolStripMenuItem2;
     }
 }
