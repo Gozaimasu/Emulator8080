@@ -1,4 +1,5 @@
-﻿using ConsoleEmulator;
+﻿using ConsoleCPUDiag;
+using ConsoleEmulator;
 
 CPU8080 cpu = new();
 

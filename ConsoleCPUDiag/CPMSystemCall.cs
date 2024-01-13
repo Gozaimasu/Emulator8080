@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ConsoleEmulator;
 using System.Runtime.CompilerServices;
 
-namespace ConsoleEmulator;
+namespace ConsoleCPUDiag;
 
 /// <summary>
 /// https://www.seasip.info/Cpm/bdos.html
