@@ -1,7 +1,9 @@
 using ConsoleEmulator;
+using SpaceInvaders;
 using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Keys = SpaceInvaders.Keys;
 
 namespace WinFormsEmulator;
 
@@ -139,11 +141,36 @@ public partial class Form1 : Form
 
     private void Form1_KeyUp(object sender, KeyEventArgs e)
     {
-        _arcadePort1.KeyUp(e.KeyData);
+        if (e.KeyData == System.Windows.Forms.Keys.C)
+        {
+            _arcadePort1.OnCoinInserted();
+            return;
+        }
+        Keys? key = e.KeyData switch
+        {
+            System.Windows.Forms.Keys.Up => Keys.Up,
+            System.Windows.Forms.Keys.Left => Keys.Left,
+            System.Windows.Forms.Keys.Right => Keys.Right,
+            System.Windows.Forms.Keys.Enter => Keys.Enter,
+            _ => null
+        };
+        if (key == null)
+            return;
+        _arcadePort1.KeyUp(key.Value);
     }
 
     private void Form1_KeyDown(object sender, KeyEventArgs e)
     {
-        _arcadePort1.KeyDown(e.KeyData);
+        Keys? key = e.KeyData switch
+        {
+            System.Windows.Forms.Keys.Up => Keys.Up,
+            System.Windows.Forms.Keys.Left => Keys.Left,
+            System.Windows.Forms.Keys.Right => Keys.Right,
+            System.Windows.Forms.Keys.Enter => Keys.Enter,
+            _ => null
+        };
+        if (key == null)
+            return;
+        _arcadePort1.KeyDown(key.Value);
     }
 }

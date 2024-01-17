@@ -1,8 +1,8 @@
 ﻿using Emulator;
 
-namespace WinFormsEmulator;
+namespace SpaceInvaders;
 
-internal class ArcadeInput : IInputDevice
+public class ArcadeInput : IInputDevice
 {
     private bool _coinInserted = false;
     private bool _start = false;
@@ -37,7 +37,7 @@ internal class ArcadeInput : IInputDevice
         return result;
     }
 
-    internal void KeyDown(Keys keyData)
+    public void KeyDown(Keys keyData)
     {
         if (keyData == Keys.Enter)
         {
@@ -57,12 +57,8 @@ internal class ArcadeInput : IInputDevice
         }
     }
 
-    internal void KeyUp(Keys keyData)
+    public void KeyUp(Keys keyData)
     {
-        if (keyData == Keys.C)
-        {
-            _coinInserted = true;
-        }
         if (keyData == Keys.Enter)
         {
             _start = false;
@@ -79,5 +75,10 @@ internal class ArcadeInput : IInputDevice
         {
             _shot = false;
         }
+    }
+
+    public void OnCoinInserted ()
+    {
+        _coinInserted = true;
     }
 }

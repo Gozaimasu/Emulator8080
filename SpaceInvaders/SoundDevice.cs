@@ -1,9 +1,9 @@
 ﻿using Emulator;
 using System.Media;
 
-namespace WinFormsEmulator;
+namespace SpaceInvaders;
 
-internal class SoundDevice : IOutputDevice
+public class SoundDevice : IOutputDevice
 {
     private readonly byte _port;
     private readonly SoundPlayer?[] _sounds = new SoundPlayer?[8];
