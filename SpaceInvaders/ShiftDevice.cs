@@ -1,8 +1,8 @@
 ﻿using Emulator;
 
-namespace WinFormsEmulator;
+namespace SpaceInvaders;
 
-internal class ShiftDevice : IOutputDevice, IInputDevice
+public class ShiftDevice : IOutputDevice, IInputDevice
 {
     private readonly object _lock = new();
     private readonly ShiftOffsetDevice _shiftOffsetDevice;
